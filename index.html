@@ -12,6 +12,7 @@
       --text-main: #ffffff;
       --text-secondary: #9aa0a6;
       --border-color: #2a2d34;
+      --whatsapp-green: #25d366;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text-main); }
@@ -41,10 +42,6 @@
     .filter-group select {
       width: 100%; padding: 12px; background: #0f1115; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;
     }
-    .btn-search {
-      background: var(--red-accent); color: white; border: none; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase;
-    }
-    .btn-search:hover { background: #c4181e; }
 
     /* Catálogo de Vehículos */
     .catalog { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
@@ -58,16 +55,19 @@
     .card-title { font-size: 18px; margin-bottom: 10px; }
     .card-specs { color: var(--text-secondary); font-size: 13px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .card-price { font-size: 20px; font-weight: bold; color: var(--red-accent); margin-bottom: 15px; }
-    .btn-details { display: block; width: 100%; text-align: center; background: transparent; color: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; text-decoration: none; font-size: 14px; }
-    .btn-details:hover { background: var(--border-color); }
+    
+    /* Botón de WhatsApp */
+    .btn-whatsapp { 
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; text-align: center; background: var(--whatsapp-green); color: white; 
+      border: none; padding: 12px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer;
+    }
+    .btn-whatsapp:hover { background: #1eb954; }
 
     /* Sección Consignación */
     .consign { background: var(--card-bg); padding: 50px 5%; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-top: 60px; text-align: center; }
     .consign h2 { font-size: 28px; margin-bottom: 15px; }
     .consign p { color: var(--text-secondary); max-width: 600px; margin: 0 auto 30px; }
-    .consign-form { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-    .consign-form input, .consign-form textarea { width: 100%; padding: 12px; background: #0f1115; border: 1px solid var(--border-color); color: white; border-radius: 4px; }
-    .btn-submit { background: var(--red-accent); color: white; padding: 14px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
     /* Pie de Página */
     footer { padding: 30px 5%; text-align: center; color: var(--text-secondary); font-size: 14px; }
@@ -126,7 +126,7 @@
             <span>⛽ Nafta</span>
           </div>
           <div class="card-price">U$S 15.900</div>
-          <button class="btn-details" onclick="verDetalles('Volkswagen Polo 2019 - U$S 15.900')">Consultar por la Web</button>
+          <button class="btn-whatsapp" onclick="consultarWhatsApp('Volkswagen Polo 2019 (U$S 15.900)')">💬 Consultar por WhatsApp</button>
         </div>
       </div>
 
@@ -142,7 +142,7 @@
             <span>⛽ Nafta</span>
           </div>
           <div class="card-price">U$S 19.500</div>
-          <button class="btn-details" onclick="verDetalles('Toyota Corolla 2020 - U$S 19.500')">Consultar por la Web</button>
+          <button class="btn-whatsapp" onclick="consultarWhatsApp('Toyota Corolla 2020 (U$S 19.500)')">💬 Consultar por WhatsApp</button>
         </div>
       </div>
 
@@ -158,7 +158,7 @@
             <span>⛽ Nafta</span>
           </div>
           <div class="card-price">U$S 13.900</div>
-          <button class="btn-details" onclick="verDetalles('Ford EcoSport 2018 - U$S 13.900')">Consultar por la Web</button>
+          <button class="btn-whatsapp" onclick="consultarWhatsApp('Ford EcoSport 2018 (U$S 13.900)')">💬 Consultar por WhatsApp</button>
         </div>
       </div>
 
@@ -167,18 +167,9 @@
 
   <!-- Sección Consignación -->
   <section class="consign" id="vender">
-    <h2>¿Querés vender tu auto?</h2>
+    <h2>¿Querés vender tu auto con nosotros?</h2>
     <p>Te ofrecemos la mejor evaluación del mercado y lo vendemos por vos a consignación 100% online.</p>
-    
-    <!-- Formulario directo por email -->
-    <form class="consign-form" action="https://formspree.io/f/xknkpepr" method="POST">
-      <input type="text" name="nombre" placeholder="Tu nombre completo" required>
-      <input type="email" name="email" placeholder="Tu correo electrónico" required>
-      <input type="tel" name="telefono" placeholder="Tu teléfono de contacto" required>
-      <input type="text" name="vehiculo" placeholder="Marca, Modelo y Año de tu auto" required>
-      <textarea name="mensaje" rows="3" placeholder="Detalles de tu auto (kilometraje, precio pretendido, estado)"></textarea>
-      <button type="submit" class="btn-submit">Enviar Datos de Consignación</button>
-    </form>
+    <button class="btn-whatsapp" style="max-width: 300px; margin: 0 auto; padding: 15px; font-size: 16px;" onclick="consignarWhatsApp()">💬 Quiero consignar mi auto</button>
   </section>
 
   <footer>
@@ -186,6 +177,20 @@
   </footer>
 
   <script>
+    // ⚠️ REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL DE WHATSAPP CON CÓDIGO DE PAÍS
+    // Ej: Para Uruguay 598 + número sin 0 (59899123456) | Para Argentina 549 + número
+    const TELEFONO_WHATSAPP = "59899123456";
+
+    function consultarWhatsApp(auto) {
+      const mensaje = encodeURIComponent("Hola MMautomoviles! Quisiera consultar por el siguiente auto que vi en la web: " + auto);
+      window.open("https://wa.me/" + TELEFONO_WHATSAPP + "?text=" + mensaje, "_blank");
+    }
+
+    function consignarWhatsApp() {
+      const mensaje = encodeURIComponent("Hola MMautomoviles! Tengo un auto que me gustaría vender a consignación con ustedes.");
+      window.open("https://wa.me/" + TELEFONO_WHATSAPP + "?text=" + mensaje, "_blank");
+    }
+
     // Función para filtrar autos en tiempo real
     function filtrarAutos() {
       const marca = document.getElementById('filter-marca').value;
@@ -202,11 +207,6 @@
           card.style.display = 'none';
         }
       });
-    }
-
-    function verDetalles(auto) {
-      alert("Has seleccionado: " + auto + ".\n\nCompleta el formulario de abajo indicando este auto para enviarte toda la información a tu correo.");
-      window.location.href = '#vender';
     }
   </script>
 
