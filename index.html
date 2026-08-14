@@ -31,17 +31,7 @@
     }
     .hero h1 { font-size: 42px; text-transform: uppercase; margin-bottom: 15px; }
     .hero h1 span { color: var(--red-accent); }
-    .hero p { color: var(--text-secondary); font-size: 18px; margin-bottom: 30px; }
-
-    /* Barra de Filtros */
-    .filter-bar {
-      background: var(--card-bg); max-width: 1000px; margin: 0 auto; padding: 20px; border-radius: 8px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid var(--border-color);
-    }
-    .filter-group select {
-      width: 100%; padding: 12px; background: #0f1115; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;
-    }
+    .hero p { color: var(--text-secondary); font-size: 18px; }
 
     /* Catálogo de Vehículos */
     .catalog { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
@@ -50,11 +40,11 @@
     
     .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s; }
     .card:hover { transform: translateY(-5px); }
-    .card img { width: 100%; height: 180px; object-fit: cover; }
+    .card img { width: 100%; height: 200px; object-fit: cover; }
     .card-body { padding: 20px; }
-    .card-title { font-size: 18px; margin-bottom: 10px; }
-    .card-specs { color: var(--text-secondary); font-size: 13px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .card-price { font-size: 20px; font-weight: bold; color: var(--red-accent); margin-bottom: 15px; }
+    .card-title { font-size: 18px; margin-bottom: 10px; font-weight: bold; }
+    .card-specs { color: var(--text-secondary); font-size: 14px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card-price { font-size: 22px; font-weight: bold; color: var(--red-accent); margin-bottom: 15px; }
     
     /* Botón de WhatsApp */
     .btn-whatsapp { 
@@ -88,30 +78,15 @@
   <section class="hero">
     <h1>Encontrá tu <span>Próximo Auto</span></h1>
     <p>Usados seleccionados a consignación con la mejor atención y garantía.</p>
-    
-    <!-- Filtros interactivos -->
-    <div class="filter-bar">
-      <div class="filter-group">
-        <select id="filter-marca" onchange="filtrarAutos()">
-          <option value="">Todas las marcas</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <select id="filter-transmision" onchange="filtrarAutos()">
-          <option value="">Todas las cajas</option>
-          <option value="Manual">Manual</option>
-          <option value="Automática">Automática</option>
-        </select>
-      </div>
-    </div>
   </section>
 
   <!-- Catálogo -->
   <section class="catalog" id="vehiculos">
     <h2>Vehículos</h2>
     <div class="grid" id="grid-autos">
-      <<!-- AUDI Q2 -->
-      <div class="card" data-marca="Audi" data-transmision="Automática">
+
+      <!-- AUDI Q2 -->
+      <div class="card">
         <img src="audi-q2.jpg" alt="Audi Q2 TFSI Turbo 1.0">
         <div class="card-body">
           <div class="card-title">Audi Q2 TFSI Turbo 1.0</div>
@@ -123,7 +98,8 @@
           <div class="card-price">U$S 19.500</div>
           <button class="btn-whatsapp" onclick="consultarWhatsApp('Audi Q2 TFSI Turbo 1.0 2018 - U$S 19.500')">💬 Consultar por WhatsApp</button>
         </div>
-      </div>>
+      </div>
+
     </div>
   </section>
 
@@ -150,24 +126,6 @@
     function consignarWhatsApp() {
       const mensaje = encodeURIComponent("Hola MMautomoviles! Tengo un auto que me gustaría vender a consignación con ustedes.");
       window.open("https://wa.me/" + TELEFONO_WHATSAPP + "?text=" + mensaje, "_blank");
-    }
-
-    // Filtro interactivo
-    function filtrarAutos() {
-      const marca = document.getElementById('filter-marca').value;
-      const transmision = document.getElementById('filter-transmision').value;
-      const cards = document.querySelectorAll('.card');
-
-      cards.forEach(card => {
-        const matchMarca = !marca || card.dataset.marca === marca;
-        const matchTransmision = !transmision || card.dataset.transmision === transmision;
-
-        if (matchMarca && matchTransmision) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
     }
   </script>
 
