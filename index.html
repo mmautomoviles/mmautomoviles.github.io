@@ -1,197 +1,20 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMautomoviles | Usados Seleccionados a Consignación</title>
-  <style>
-    :root {
-      --bg-dark: #0f1115;
-      --card-bg: #181b20;
-      --red-accent: #e62229;
-      --text-main: #ffffff;
-      --text-secondary: #9aa0a6;
-      --border-color: #2a2d34;
-      --whatsapp-green: #25d366;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text-main); }
-    
-    /* Encabezado y Menú */
-    header { background: #000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-    .logo { font-size: 24px; font-weight: bold; color: var(--text-main); text-decoration: none; }
-    .logo span { color: var(--red-accent); }
-    nav a { color: var(--text-main); text-decoration: none; margin-left: 20px; font-size: 14px; text-transform: uppercase; }
-    nav a:hover { color: var(--red-accent); }
+<script>
+    // ⚠️ PONÉ ACÁ TU NÚMERO REAL CON CÓDIGO DE PAÍS (Ej para Uruguay: 59899123456)
+    const TELEFONO_WHATSAPP = "59899123456";
 
-    /* Portada Principal */
-    .hero {
-      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80') center/cover;
-      padding: 80px 5% 60px; text-align: center;
-    }
-    .hero h1 { font-size: 42px; text-transform: uppercase; margin-bottom: 15px; }
-    .hero h1 span { color: var(--red-accent); }
-    .hero p { color: var(--text-secondary); font-size: 18px; margin-bottom: 30px; }
-
-    /* Barra de Filtros */
-    .filter-bar {
-      background: var(--card-bg); max-width: 1000px; margin: 0 auto; padding: 20px; border-radius: 8px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid var(--border-color);
-    }
-    .filter-group select {
-      width: 100%; padding: 12px; background: #0f1115; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;
-    }
-
-    /* Catálogo de Vehículos */
-    .catalog { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
-    .catalog h2 { font-size: 28px; margin-bottom: 30px; border-bottom: 2px solid var(--red-accent); display: inline-block; padding-bottom: 5px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
-    
-    .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s; }
-    .card:hover { transform: translateY(-5px); }
-    .card img { width: 100%; height: 180px; object-fit: cover; }
-    .card-body { padding: 20px; }
-    .card-title { font-size: 18px; margin-bottom: 10px; }
-    .card-specs { color: var(--text-secondary); font-size: 13px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .card-price { font-size: 20px; font-weight: bold; color: var(--red-accent); margin-bottom: 15px; }
-    
-    /* Botón de WhatsApp */
-    .btn-whatsapp { 
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      width: 100%; text-align: center; background: var(--whatsapp-green); color: white; 
-      border: none; padding: 12px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer;
-    }
-    .btn-whatsapp:hover { background: #1eb954; }
-
-    /* Sección Consignación */
-    .consign { background: var(--card-bg); padding: 50px 5%; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-top: 60px; text-align: center; }
-    .consign h2 { font-size: 28px; margin-bottom: 15px; }
-    .consign p { color: var(--text-secondary); max-width: 600px; margin: 0 auto 30px; }
-
-    /* Pie de Página */
-    footer { padding: 30px 5%; text-align: center; color: var(--text-secondary); font-size: 14px; }
-  </style>
-</head>
-<body>
-
-  <!-- Encabezado -->
-  <header>
-    <a href="#" class="logo">MM<span>AUTOMOVILES</span></a>
-    <nav>
-      <a href="#vehiculos">Vehículos</a>
-      <a href="#vender">Vender mi Auto</a>
-    </nav>
-  </header>
-
-  <!-- Portada -->
-  <section class="hero">
-    <h1>Encontrá tu <span>Próximo Auto</span></h1>
-    <p>Usados seleccionados a consignación con la mejor atención y garantía.</p>
-    
-    <!-- Filtros interactivos -->
-    <div class="filter-bar">
-      <div class="filter-group">
-        <select id="filter-marca" onchange="filtrarAutos()">
-          <option value="">Todas las marcas</option>
-          <option value="Volkswagen">Volkswagen</option>
-          <option value="Toyota">Toyota</option>
-          <option value="Ford">Ford</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <select id="filter-transmision" onchange="filtrarAutos()">
-          <option value="">Todas las cajas</option>
-          <option value="Manual">Manual</option>
-          <option value="Automática">Automática</option>
-        </select>
-      </div>
-    </div>
-  </section>
-
-  <!-- Catálogo -->
-  <section class="catalog" id="vehiculos">
-    <h2>Vehículos Destacados</h2>
-    <div class="grid" id="grid-autos">
-      
-      <!-- Auto 1 -->
-      <div class="card" data-marca="Volkswagen" data-transmision="Manual">
-        <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80" alt="Volkswagen Polo">
-        <div class="card-body">
-          <div class="card-title">Volkswagen Polo 1.6</div>
-          <div class="card-specs">
-            <span>📅 2019</span>
-            <span>🛣️ 58.000 km</span>
-            <span>⚙️ Manual</span>
-            <span>⛽ Nafta</span>
-          </div>
-          <div class="card-price">U$S 15.900</div>
-          <button class="btn-whatsapp" onclick="consultarWhatsApp('Volkswagen Polo 2019 (U$S 15.900)')">💬 Consultar por WhatsApp</button>
-        </div>
-      </div>
-
-      <!-- Auto 2 -->
-      <div class="card" data-marca="Toyota" data-transmision="Automática">
-        <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=600&q=80" alt="Toyota Corolla">
-        <div class="card-body">
-          <div class="card-title">Toyota Corolla 1.8</div>
-          <div class="card-specs">
-            <span>📅 2020</span>
-            <span>🛣️ 42.000 km</span>
-            <span>⚙️ Automática</span>
-            <span>⛽ Nafta</span>
-          </div>
-          <div class="card-price">U$S 19.500</div>
-          <button class="btn-whatsapp" onclick="consultarWhatsApp('Toyota Corolla 2020 (U$S 19.500)')">💬 Consultar por WhatsApp</button>
-        </div>
-      </div>
-
-      <!-- Auto 3 -->
-      <div class="card" data-marca="Ford" data-transmision="Manual">
-        <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" alt="Ford EcoSport">
-        <div class="card-body">
-          <div class="card-title">Ford EcoSport 1.5</div>
-          <div class="card-specs">
-            <span>📅 2018</span>
-            <span>🛣️ 71.000 km</span>
-            <span>⚙️ Manual</span>
-            <span>⛽ Nafta</span>
-          </div>
-          <div class="card-price">U$S 13.900</div>
-          <button class="btn-whatsapp" onclick="consultarWhatsApp('Ford EcoSport 2018 (U$S 13.900)')">💬 Consultar por WhatsApp</button>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Sección Consignación -->
-  <section class="consign" id="vender">
-    <h2>¿Querés vender tu auto con nosotros?</h2>
-    <p>Te ofrecemos la mejor evaluación del mercado y lo vendemos por vos a consignación 100% online.</p>
-    <button class="btn-whatsapp" style="max-width: 300px; margin: 0 auto; padding: 15px; font-size: 16px;" onclick="consignarWhatsApp()">💬 Quiero consignar mi auto</button>
-  </section>
-
-  <footer>
-    &copy; 2026 MMautomoviles. Todos los derechos reservados.
-  </footer>
-
-  <script>
-    // ⚠️ REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL DE WHATSAPP CON CÓDIGO DE PAÍS
-    // Ej: Para Uruguay 598 + número sin 0 (59899123456) | Para Argentina 549 + número
-    const TELEFONO_WHATSAPP = "59899321154";
-
-    function consultarWhatsApp(auto) {
+    // Función que abre WhatsApp directamente con el auto seleccionado
+    function verDetalles(auto) {
       const mensaje = encodeURIComponent("Hola MMautomoviles! Quisiera consultar por el siguiente auto que vi en la web: " + auto);
       window.open("https://wa.me/" + TELEFONO_WHATSAPP + "?text=" + mensaje, "_blank");
     }
 
+    // Función para el botón general de consignar
     function consignarWhatsApp() {
       const mensaje = encodeURIComponent("Hola MMautomoviles! Tengo un auto que me gustaría vender a consignación con ustedes.");
       window.open("https://wa.me/" + TELEFONO_WHATSAPP + "?text=" + mensaje, "_blank");
     }
 
-    // Función para filtrar autos en tiempo real
+    // Filtros en tiempo real
     function filtrarAutos() {
       const marca = document.getElementById('filter-marca').value;
       const transmision = document.getElementById('filter-transmision').value;
@@ -209,6 +32,3 @@
       });
     }
   </script>
-
-</body>
-</html>
