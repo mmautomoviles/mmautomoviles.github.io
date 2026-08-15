@@ -23,7 +23,7 @@
                 <i class="fa-solid fa-car-side text-amber-500 text-3xl"></i>
                 <span class="text-2xl font-bold tracking-wider">MM <span class="text-amber-500">AUTOMÓVILES</span></span>
             </div>
-            <button onclick="openModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 shadow">
+            <button id="open-modal-btn" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 shadow">
                 <i class="fa-solid fa-plus-circle"></i>
                 <span>Publicar Vehículo</span>
             </button>
@@ -45,7 +45,6 @@
 
         <!-- CARDS CONTAINER -->
         <div id="catalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Loading Spinner -->
             <div id="loading" class="col-span-full text-center py-12">
                 <i class="fa-solid fa-spinner fa-spin text-4xl text-amber-500"></i>
                 <p class="mt-2 text-gray-500">Cargando vehículos...</p>
@@ -61,7 +60,7 @@
     <!-- MODAL DE PUBLICACIÓN / ADMIN -->
     <div id="admin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
             
             <!-- ETAPA 1: AUTENTICACIÓN -->
             <div id="auth-step">
@@ -72,7 +71,7 @@
                     <h3 class="text-xl font-bold text-gray-900">Acceso Administrador</h3>
                     <p class="text-sm text-gray-500">Ingresá tu contraseña para gestionar el catálogo</p>
                 </div>
-                <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+                <form id="auth-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
                         <input type="password" id="admin-pass" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="••••••••" required>
@@ -90,7 +89,7 @@
                     <h3 class="text-xl font-bold text-gray-900">Publicar Nuevo Vehículo</h3>
                     <p class="text-sm text-gray-500">Completá los datos del auto para agregarlo al catálogo</p>
                 </div>
-                <form id="vehicle-form" onsubmit="handlePublish(event)" class="space-y-4">
+                <form id="vehicle-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Marca y Modelo</label>
                         <input type="text" id="title" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Ej. Volkswagen Gol Trend 1.6" required>
@@ -136,12 +135,11 @@
         </div>
     </div>
 
-    <!-- SDKs de Firebase (v9 / Modular Scripts) -->
+    <!-- FIREBASE SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyB8MSux4yj49g_qcglfqARg1vh5tZzMuU4",
             authDomain: "mmautomoviles-e2e94.firebaseapp.com",
@@ -152,86 +150,24 @@
             measurementId: "G-LQHCP4BLXZ"
         };
 
-        // Inicializar Firebase y Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         const ADMIN_PASSWORD = "admin";
         let isAuthenticated = false;
 
-        // Cargar vehículos al iniciar
-        window.addEventListener('DOMContentLoaded', loadVehicles);
+        // ELEMENTOS DEL DOM
+        const modal = document.getElementById('admin-modal');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const authForm = document.getElementById('auth-form');
+        const vehicleForm = document.getElementById('vehicle-form');
 
-        async function loadVehicles() {
-            const catalog = document.getElementById('catalog');
-            const vehicleCount = document.getElementById('vehicle-count');
+        // EVENTOS
+        openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-            try {
-                const querySnapshot = await getDocs(collection(db, "vehicles"));
-                catalog.innerHTML = "";
-                
-                let count = 0;
-                querySnapshot.forEach((docSnap) => {
-                    count++;
-                    const data = docSnap.data();
-                    const carId = docSnap.id;
-
-                    const card = `
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 flex flex-col justify-between border border-gray-100">
-                            <div>
-                                <div class="relative h-48 bg-gray-200">
-                                    <img src="${data.image}" alt="${data.title}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800'">
-                                    <span class="absolute top-3 right-3 bg-slate-900/80 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-full backdrop-blur-sm">${data.fuel}</span>
-                                </div>
-                                <div class="p-5">
-                                    <h3 class="text-xl font-bold text-gray-900 mb-2">${data.title}</h3>
-                                    <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                                        <span><i class="fa-solid fa-calendar text-amber-500 mr-1"></i>${data.year}</span>
-                                        <span><i class="fa-solid fa-gauge-high text-amber-500 mr-1"></i>${Number(data.km).toLocaleString()} km</span>
-                                    </div>
-                                    <p class="text-gray-600 text-sm line-clamp-2">${data.description}</p>
-                                </div>
-                            </div>
-                            <div class="p-5 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div>
-                                    <span class="text-xs text-gray-400 block">Precio</span>
-                                    <span class="text-2xl font-extrabold text-slate-900">U$S ${Number(data.price).toLocaleString()}</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    ${isAuthenticated ? `<button onclick="deleteVehicle('${carId}')" class="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>` : ''}
-                                    <a href="https://wa.me/?text=Hola%2C%20estoy%20interesado%20en%20el%20veh%C3%ADculo%20${encodeURIComponent(data.title)}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-medium px-3 py-2 rounded-lg transition text-sm flex items-center space-x-1">
-                                        <i class="fa-brands fa-whatsapp text-base"></i>
-                                        <span>Consultar</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    catalog.innerHTML += card;
-                });
-
-                vehicleCount.innerText = `${count} vehículos registrados`;
-
-                if (count === 0) {
-                    catalog.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400"><i class="fa-solid fa-car text-5xl mb-3"></i><p>No hay vehículos cargados por el momento.</p></div>`;
-                }
-            } catch (error) {
-                console.error("Error al cargar vehículos:", error);
-                catalog.innerHTML = `<div class="col-span-full text-center py-12 text-red-500"><p>Ocurrió un error al cargar el catálogo. Verificá las reglas de Firebase.</p></div>`;
-            }
-        }
-
-        // Manejo de Modal
-        window.openModal = function() {
-            document.getElementById('admin-modal').classList.remove('hidden');
-        }
-
-        window.closeModal = function() {
-            document.getElementById('admin-modal').classList.add('hidden');
-        }
-
-        // Autenticación Admin
-        window.handleAuth = function(e) {
+        authForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const pass = document.getElementById('admin-pass').value;
             const errorMsg = document.getElementById('auth-error');
@@ -241,14 +177,13 @@
                 errorMsg.classList.add('hidden');
                 document.getElementById('auth-step').classList.add('hidden');
                 document.getElementById('form-step').classList.remove('hidden');
-                loadVehicles(); // Recargar para mostrar botones de borrar
+                loadVehicles();
             } else {
                 errorMsg.classList.remove('hidden');
             }
-        }
+        });
 
-        // Publicar Vehículo
-        window.handlePublish = async function(e) {
+        vehicleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
@@ -268,30 +203,90 @@
             try {
                 await addDoc(collection(db, "vehicles"), vehicleData);
                 alert("¡Vehículo publicado con éxito!");
-                document.getElementById('vehicle-form').reset();
-                closeModal();
+                vehicleForm.reset();
+                modal.classList.add('hidden');
                 loadVehicles();
             } catch (error) {
                 console.error("Error al publicar:", error);
-                alert("Error al publicar el vehículo. Revisá la consola.");
+                alert("Error al guardar: " + error.message);
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Publicar Vehículo";
             }
-        }
+        });
 
-        // Eliminar Vehículo
-        window.deleteVehicle = async function(id) {
-            if (confirm("¿Estás seguro de eliminar esta publicación?")) {
-                try {
-                    await deleteDoc(doc(db, "vehicles", id));
-                    loadVehicles();
-                } catch (error) {
-                    console.error("Error al eliminar:", error);
-                    alert("No se pudo eliminar el vehículo.");
+        async function loadVehicles() {
+            const catalog = document.getElementById('catalog');
+            const vehicleCount = document.getElementById('vehicle-count');
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "vehicles"));
+                catalog.innerHTML = "";
+                
+                let count = 0;
+                querySnapshot.forEach((docSnap) => {
+                    count++;
+                    const data = docSnap.data();
+                    const carId = docSnap.id;
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 flex flex-col justify-between border border-gray-100";
+                    card.innerHTML = `
+                        <div>
+                            <div class="relative h-48 bg-gray-200">
+                                <img src="${data.image}" alt="${data.title}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800'">
+                                <span class="absolute top-3 right-3 bg-slate-900/80 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-full backdrop-blur-sm">${data.fuel}</span>
+                            </div>
+                            <div class="p-5">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">${data.title}</h3>
+                                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                                    <span><i class="fa-solid fa-calendar text-amber-500 mr-1"></i>${data.year}</span>
+                                    <span><i class="fa-solid fa-gauge-high text-amber-500 mr-1"></i>${Number(data.km).toLocaleString()} km</span>
+                                </div>
+                                <p class="text-gray-600 text-sm line-clamp-2">${data.description}</p>
+                            </div>
+                        </div>
+                        <div class="p-5 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs text-gray-400 block">Precio</span>
+                                <span class="text-2xl font-extrabold text-slate-900">U$S ${Number(data.price).toLocaleString()}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                ${isAuthenticated ? `<button data-id="${carId}" class="delete-btn bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>` : ''}
+                                <a href="https://wa.me/?text=Hola%2C%20estoy%20interesado%20en%20el%20veh%C3%ADculo%20${encodeURIComponent(data.title)}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-medium px-3 py-2 rounded-lg transition text-sm flex items-center space-x-1">
+                                    <i class="fa-brands fa-whatsapp text-base"></i>
+                                    <span>Consultar</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    catalog.appendChild(card);
+                });
+
+                // Asignar evento borrar
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        if (confirm("¿Estás seguro de eliminar esta publicación?")) {
+                            await deleteDoc(doc(db, "vehicles", id));
+                            loadVehicles();
+                        }
+                    });
+                });
+
+                vehicleCount.innerText = `${count} vehículos registrados`;
+
+                if (count === 0) {
+                    catalog.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400"><i class="fa-solid fa-car text-5xl mb-3"></i><p>No hay vehículos cargados por el momento.</p></div>`;
                 }
+            } catch (error) {
+                console.error("Error al cargar vehículos:", error);
+                catalog.innerHTML = `<div class="col-span-full text-center py-12 text-red-500"><p>Error al conectar con la base de datos.</p></div>`;
             }
         }
+
+        // Cargar datos al iniciar
+        loadVehicles();
     </script>
 </body>
 </html>
