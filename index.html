@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMautomoviles | Usados Seleccionados a Consignación</title>
+  <title>MMautomoviles | Usados Seleccionados</title>
   <style>
     :root {
       --bg-dark: #0f1115;
@@ -17,11 +17,11 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text-main); }
     
-    /* Encabezado y Menú */
+    /* Encabezado */
     header { background: #000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
     .logo { font-size: 24px; font-weight: bold; color: var(--text-main); text-decoration: none; }
     .logo span { color: var(--red-accent); }
-    nav a { color: var(--text-main); text-decoration: none; margin-left: 20px; font-size: 14px; text-transform: uppercase; }
+    nav a { color: var(--text-main); text-decoration: none; font-size: 14px; text-transform: uppercase; }
     nav a:hover { color: var(--red-accent); }
 
     /* Portada Principal */
@@ -55,7 +55,7 @@
     }
     .btn-whatsapp:hover { background: #1eb954; }
 
-    /* Ventana Modal / Galería de Fotos */
+    /* Galería de Fotos (Modal) */
     .modal {
       display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column;
@@ -66,13 +66,8 @@
     .modal-btn { background: var(--red-accent); color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 4px; cursor: pointer; }
     .modal-counter { color: var(--text-secondary); font-size: 14px; }
 
-    /* Sección Consignación */
-    .consign { background: var(--card-bg); padding: 50px 5%; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-top: 60px; text-align: center; }
-    .consign h2 { font-size: 28px; margin-bottom: 15px; }
-    .consign p { color: var(--text-secondary); max-width: 600px; margin: 0 auto 30px; }
-
     /* Pie de Página */
-    footer { padding: 30px 5%; text-align: center; color: var(--text-secondary); font-size: 14px; }
+    footer { padding: 40px 5%; text-align: center; color: var(--text-secondary); font-size: 14px; border-top: 1px solid var(--border-color); margin-top: 60px; }
   </style>
 </head>
 <body>
@@ -82,14 +77,13 @@
     <a href="#" class="logo">MM<span>AUTOMOVILES</span></a>
     <nav>
       <a href="#vehiculos">Vehículos</a>
-      <a href="#vender">Vender mi Auto</a>
     </nav>
   </header>
 
   <!-- Portada -->
   <section class="hero">
     <h1>Encontrá tu <span>Próximo Auto</span></h1>
-    <p>Usados seleccionados a consignación con la mejor atención y garantía.</p>
+    <p>Usados seleccionados con la mejor atención y garantía.</p>
   </section>
 
   <!-- Catálogo -->
@@ -114,8 +108,8 @@
       </div>
 
       <!-- CHEVROLET TRACKER -->
-      <div class="card" onclick="abrirGaleria(['Tracketportada.jpeg', 'tracker1.jpeg', 'tracker2.jpeg', 'tracket3.jpeg', 'tracker4.jpeg'])">
-        <img src="Tracketportada.jpeg" alt="Chevrolet Tracker 1.8">
+      <div class="card" onclick="abrirGaleria(['tracker1.jpg', 'tracker2.jpg', 'tracker3.jpg', 'tracker4.jpg', 'tracker5.jpg'])">
+        <img src="tracker1.jpg" alt="Chevrolet Tracker 1.8">
         <div class="card-body">
           <div class="card-title">Chevrolet Tracker 1.8</div>
           <div class="card-specs">
@@ -129,7 +123,7 @@
         </div>
       </div>
 
-   <!-- JEEP RENEGADE -->
+      <!-- JEEP RENEGADE -->
       <div class="card" onclick="abrirGaleria(['jeep1.jpg', 'jeep2.jpg', 'jeep3.jpg', 'jeep4.jpg', 'jeep5.jpg'])">
         <img src="jeep1.jpg" alt="Jeep Renegade Sport 1.8">
         <div class="card-body">
@@ -145,6 +139,9 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
   <!-- Ventana Modal de Galería -->
   <div id="galeriaModal" class="modal">
     <span class="modal-close" onclick="cerrarGaleria()">&times;</span>
@@ -155,13 +152,6 @@
       <button class="modal-btn" onclick="cambiarFoto(1)">Siguiente ❯</button>
     </div>
   </div>
-
-  <!-- Sección Consignación -->
-  <section class="consign" id="vender">
-    <h2>¿Querés vender tu auto con nosotros?</h2>
-    <p>Te ofrecemos la mejor evaluación del mercado y lo vendemos por vos a consignación 100% online.</p>
-    <button class="btn-whatsapp" style="max-width: 300px; margin: 0 auto; padding: 15px; font-size: 16px;" onclick="consignarWhatsApp()">💬 Quiero consignar mi auto</button>
-  </section>
 
   <footer>
     &copy; 2026 MMautomoviles. Todos los derechos reservados.
@@ -202,7 +192,6 @@
     function consultarWhatsApp(auto) {
       const mensaje = encodeURIComponent("Hola MMautomoviles! Quisiera consultar por el siguiente auto que vi en la web: " + auto);
       window.open("https://wa.me/" + TELEFONO_WHATSAPP + "?text=" + mensaje, "_blank");
-    
     }
   </script>
 
