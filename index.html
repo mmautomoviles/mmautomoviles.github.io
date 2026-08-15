@@ -36,7 +36,7 @@
     /* Catálogo de Vehículos */
     .catalog { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
     .catalog h2 { font-size: 28px; margin-bottom: 30px; border-bottom: 2px solid var(--red-accent); display: inline-block; padding-bottom: 5px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
     
     .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s; cursor: pointer; }
     .card:hover { transform: translateY(-5px); }
@@ -131,28 +131,6 @@
 
     </div>
   </section>
-          <div class="card-price">U$S 19.500</div>
-          <div class="card-hint">📸 Toca para ver más fotos</div>
-          <button class="btn-whatsapp" onclick="event.stopPropagation(); consultarWhatsApp('Audi Q2 TFSI Turbo 1.0 2018 - U$S 19.500')">💬 Consultar por WhatsApp</button>
-        </div>
-      </div>
-<!-- CHEVROLET TRACKER -->
-      <div class="card" onclick="abrirGaleria(['Tracketportada.jpeg', 'tracker1.jpeg', 'tracker2.jpeg', 'tracket3.jpeg', 'tracker4.jpeg'])">
-        <img src="Tracketportada.jpeg" alt="Chevrolet Tracker 1.8">
-        <div class="card-body">
-          <div class="card-title">Chevrolet Tracker 1.8</div>
-          <div class="card-specs">
-            <span>📅 2014</span>
-            <span>🛣️ 108.600 km</span>
-            <span>⚙️ Automática</span>
-          </div>
-          <div class="card-price">U$S 11.990</div>
-          <div class="card-hint">📸 Toca para ver más fotos</div>
-          <button class="btn-whatsapp" onclick="event.stopPropagation(); consultarWhatsApp('Chevrolet Tracker 1.8 2014 - U$S 11.990')">💬 Consultar por WhatsApp</button>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- Ventana Modal de Galería -->
   <div id="galeriaModal" class="modal">
@@ -177,7 +155,6 @@
   </footer>
 
   <script>
-    // ⚠️ REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL DE WHATSAPP CON CÓDIGO DE PAÍS
     const TELEFONO_WHATSAPP = "59899321154";
 
     let imagenesGaleria = [];
