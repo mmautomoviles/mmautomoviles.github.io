@@ -1,0 +1,21 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "uploads"
+public_folder: "uploads"
+
+collections:
+  - name: "autos"
+    label: "Autos"
+    folder: "content/autos"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Título / Modelo", name: "title", widget: "string"}
+      - {label: "Año", name: "anio", widget: "number"}
+      - {label: "Kilometraje (ej: 89.000 km)", name: "km", widget: "string"}
+      - {label: "Transmisión / Motor", name: "transmision", widget: "string"}
+      - {label: "Precio (ej: U$S 10.990)", name: "precio", widget: "string"}
+      - {label: "Foto de Portada", name: "portada", widget: "image"}
+      - {label: "Galería de Fotos", name: "galeria", widget: "list", field: {label: "Foto", name: "foto", widget: "image"}}
