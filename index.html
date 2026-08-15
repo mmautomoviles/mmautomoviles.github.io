@@ -38,13 +38,14 @@
     .catalog h2 { font-size: 28px; margin-bottom: 30px; border-bottom: 2px solid var(--red-accent); display: inline-block; padding-bottom: 5px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
     
-    .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s; }
+    .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s; cursor: pointer; }
     .card:hover { transform: translateY(-5px); }
     .card img { width: 100%; height: 200px; object-fit: cover; }
     .card-body { padding: 20px; }
     .card-title { font-size: 18px; margin-bottom: 10px; font-weight: bold; }
     .card-specs { color: var(--text-secondary); font-size: 14px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .card-price { font-size: 22px; font-weight: bold; color: var(--red-accent); margin-bottom: 15px; }
+    .card-hint { font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 12px; }
     
     /* Botón de WhatsApp */
     .btn-whatsapp { 
@@ -53,6 +54,17 @@
       border: none; padding: 12px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer;
     }
     .btn-whatsapp:hover { background: #1eb954; }
+
+    /* Ventana Modal / Galería de Fotos */
+    .modal {
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column;
+    }
+    .modal-content { max-width: 90%; max-height: 75vh; border-radius: 8px; object-fit: contain; }
+    .modal-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 35px; cursor: pointer; font-weight: bold; }
+    .modal-controls { margin-top: 15px; display: flex; gap: 20px; align-items: center; }
+    .modal-btn { background: var(--red-accent); color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 4px; cursor: pointer; }
+    .modal-counter { color: var(--text-secondary); font-size: 14px; }
 
     /* Sección Consignación */
     .consign { background: var(--card-bg); padding: 50px 5%; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-top: 60px; text-align: center; }
@@ -86,22 +98,34 @@
     <div class="grid" id="grid-autos">
 
       <!-- AUDI Q2 -->
-      <div class="card">
+      <div class="card" onclick="abrirGaleria(['Portada', 'audi-2.jpg', 'audi-3.jpg', 'audi-4.jpg', 'audi-5.jpg'])">
         <img src="Portada" alt="Audi Q2 TFSI Turbo 1.0">
         <div class="card-body">
           <div class="card-title">Audi Q2 TFSI Turbo 1.0</div>
           <div class="card-specs">
-            <span>📅 Año 2018</span>
+            <span>📅 2018</span>
             <span>🛣️ 104.000 km</span>
             <span>⚙️ Automática</span>
           </div>
           <div class="card-price">U$S 19.500</div>
-          <button class="btn-whatsapp" onclick="consultarWhatsApp('Audi Q2 TFSI Turbo 1.0 2018 - U$S 19.500')">💬 Consultar por WhatsApp</button>
+          <div class="card-hint">📸 Toca para ver más fotos</div>
+          <button class="btn-whatsapp" onclick="event.stopPropagation(); consultarWhatsApp('Audi Q2 TFSI Turbo 1.0 2018 - U$S 19.500')">💬 Consultar por WhatsApp</button>
         </div>
       </div>
 
     </div>
   </section>
+
+  <!-- Ventana Modal de Galería -->
+  <div id="galeriaModal" class="modal">
+    <span class="modal-close" onclick="cerrarGaleria()">&times;</span>
+    <img id="modalImg" class="modal-content" src="" alt="Vista previa">
+    <div class="modal-controls">
+      <button class="modal-btn" onclick="cambiarFoto(-1)">❮ Anterior</button>
+      <span class="modal-counter" id="modalCounter">1 / 1</span>
+      <button class="modal-btn" onclick="cambiarFoto(1)">Siguiente ❯</button>
+    </div>
+  </div>
 
   <!-- Sección Consignación -->
   <section class="consign" id="vender">
@@ -117,6 +141,35 @@
   <script>
     // ⚠️ REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL DE WHATSAPP CON CÓDIGO DE PAÍS
     const TELEFONO_WHATSAPP = "59899123456";
+
+    let imagenesGaleria = [];
+    let indiceActual = 0;
+
+    function abrirGaleria(listaFotos) {
+      imagenesGaleria = listaFotos;
+      indiceActual = 0;
+      actualizarFotoModal();
+      document.getElementById('galeriaModal').style.display = 'flex';
+    }
+
+    function cerrarGaleria() {
+      document.getElementById('galeriaModal').style.display = 'none';
+    }
+
+    function cambiarFoto(direccion) {
+      indiceActual += direccion;
+      if (indiceActual < 0) {
+        indiceActual = imagenesGaleria.length - 1;
+      } else if (indiceActual >= imagenesGaleria.length) {
+        indiceActual = 0;
+      }
+      actualizarFotoModal();
+    }
+
+    function actualizarFotoModal() {
+      document.getElementById('modalImg').src = imagenesGaleria[indiceActual];
+      document.getElementById('modalCounter').innerText = (indiceActual + 1) + " / " + imagenesGaleria.length;
+    }
 
     function consultarWhatsApp(auto) {
       const mensaje = encodeURIComponent("Hola MMautomoviles! Quisiera consultar por el siguiente auto que vi en la web: " + auto);
