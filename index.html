@@ -120,8 +120,9 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fotos (Podés seleccionar varias)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fotos (Mantené presionado para seleccionar varias)</label>
                         <input type="file" id="image-files" accept="image/*" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" required>
+                        <p id="selected-files-count" class="text-xs text-amber-600 font-semibold mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Descripción corta</label>
@@ -132,6 +133,61 @@
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EDICIÓN DE VEHÍCULO -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
+            <button id="close-edit-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Editar Vehículo</h3>
+                <p class="text-sm text-gray-500">Modificá los datos que desees actualizar</p>
+            </div>
+            <form id="edit-vehicle-form" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Marca y Modelo</label>
+                    <input type="text" id="edit-title" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Año</label>
+                        <input type="number" id="edit-year" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kilómetros</label>
+                        <input type="number" id="edit-km" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Precio (USD)</label>
+                        <input type="number" id="edit-price" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Combustible</label>
+                        <select id="edit-fuel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="Nafta">Nafta</option>
+                            <option value="Diésel">Diésel</option>
+                            <option value="Híbrido">Híbrido</option>
+                            <option value="Eléctrico">Eléctrico</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cambiar Fotos (Opcional, deja vacío para conservar las actuales)</label>
+                    <input type="file" id="edit-image-files" accept="image/*" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                    <p id="edit-files-count" class="text-xs text-amber-600 font-semibold mt-1 hidden"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descripción corta</label>
+                    <textarea id="edit-description" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" required></textarea>
+                </div>
+                <button type="submit" id="edit-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition duration-200">
+                    Guardar Cambios
+                </button>
+            </form>
         </div>
     </div>
 
@@ -161,7 +217,7 @@
     <!-- FIREBASE SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB8MSux4yj49g_qcglfqARg1vh5tZzMuU4",
@@ -186,12 +242,41 @@
         const authForm = document.getElementById('auth-form');
         const vehicleForm = document.getElementById('vehicle-form');
         
+        const editModal = document.getElementById('edit-modal');
+        const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
+        const editVehicleForm = document.getElementById('edit-vehicle-form');
+        const editFileInput = document.getElementById('edit-image-files');
+        const editFilesCountMsg = document.getElementById('edit-files-count');
+
         const galleryModal = document.getElementById('gallery-modal');
         const closeGalleryBtn = document.getElementById('close-gallery-btn');
+        const fileInput = document.getElementById('image-files');
+        const filesCountMsg = document.getElementById('selected-files-count');
 
         openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
         closeGalleryBtn.addEventListener('click', () => galleryModal.classList.add('hidden'));
+
+        fileInput.addEventListener('change', () => {
+            const count = fileInput.files.length;
+            if (count > 0) {
+                filesCountMsg.innerText = `✓ ${count} foto(s) seleccionada(s)`;
+                filesCountMsg.classList.remove('hidden');
+            } else {
+                filesCountMsg.classList.add('hidden');
+            }
+        });
+
+        editFileInput.addEventListener('change', () => {
+            const count = editFileInput.files.length;
+            if (count > 0) {
+                editFilesCountMsg.innerText = `✓ ${count} foto(s) nueva(s) seleccionada(s)`;
+                editFilesCountMsg.classList.remove('hidden');
+            } else {
+                editFilesCountMsg.classList.add('hidden');
+            }
+        });
 
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -209,7 +294,6 @@
             }
         });
 
-        // Convertir y comprimir imágenes a Base64 para almacenar directamente
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -248,7 +332,6 @@
             btn.disabled = true;
             btn.innerText = "Procesando imágenes...";
 
-            const fileInput = document.getElementById('image-files');
             const files = Array.from(fileInput.files);
 
             if (files.length === 0) {
@@ -277,6 +360,7 @@
                 await addDoc(collection(db, "vehicles"), vehicleData);
                 alert("¡Vehículo publicado con éxito!");
                 vehicleForm.reset();
+                filesCountMsg.classList.add('hidden');
                 modal.classList.add('hidden');
                 loadVehicles();
             } catch (error) {
@@ -285,6 +369,52 @@
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Publicar Vehículo";
+            }
+        });
+
+        // GUARDAR CAMBIOS DE EDICIÓN
+        editVehicleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('edit-submit-btn');
+            btn.disabled = true;
+            btn.innerText = "Guardando...";
+
+            const carId = document.getElementById('edit-id').value;
+            const currentCar = vehiclesData.find(v => v.id === carId);
+
+            try {
+                let imagesArray = currentCar.images;
+
+                if (editFileInput.files.length > 0) {
+                    btn.innerText = "Procesando fotos nuevas...";
+                    const files = Array.from(editFileInput.files);
+                    imagesArray = await Promise.all(files.map(file => fileToBase64(file)));
+                }
+
+                btn.innerText = "Guardando en base de datos...";
+
+                const updatedData = {
+                    title: document.getElementById('edit-title').value,
+                    year: parseInt(document.getElementById('edit-year').value),
+                    km: parseInt(document.getElementById('edit-km').value),
+                    price: parseInt(document.getElementById('edit-price').value),
+                    fuel: document.getElementById('edit-fuel').value,
+                    images: imagesArray,
+                    description: document.getElementById('edit-description').value
+                };
+
+                await updateDoc(doc(db, "vehicles", carId), updatedData);
+                alert("¡Vehículo actualizado correctamente!");
+                editVehicleForm.reset();
+                editFilesCountMsg.classList.add('hidden');
+                editModal.classList.add('hidden');
+                loadVehicles();
+            } catch (error) {
+                console.error("Error al editar:", error);
+                alert("Error al guardar cambios: " + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Guardar Cambios";
             }
         });
 
@@ -332,7 +462,10 @@
                                 <span class="text-2xl font-extrabold text-slate-900">U$S ${Number(data.price).toLocaleString()}</span>
                             </div>
                             <div class="flex space-x-2">
-                                ${isAuthenticated ? `<button data-id="${carId}" class="delete-btn bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>` : ''}
+                                ${isAuthenticated ? `
+                                    <button data-id="${carId}" class="edit-btn bg-blue-100 hover:bg-blue-200 text-blue-600 p-2 rounded-lg transition"><i class="fa-solid fa-pen"></i></button>
+                                    <button data-id="${carId}" class="delete-btn bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
+                                ` : ''}
                                 <a href="https://wa.me/?text=Hola%2C%20estoy%20interesado%20en%20el%20veh%C3%ADculo%20${encodeURIComponent(data.title)}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-medium px-3 py-2 rounded-lg transition text-sm flex items-center space-x-1">
                                     <i class="fa-brands fa-whatsapp text-base"></i>
                                     <span>Consultar</span>
@@ -343,6 +476,16 @@
                     catalog.appendChild(card);
                 });
 
+                // EVENTOS PARA BOTONES DE EDITAR
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = e.currentTarget.getAttribute('data-id');
+                        openEditModal(id);
+                    });
+                });
+
+                // EVENTOS PARA BOTONES DE ELIMINAR
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         e.stopPropagation();
@@ -363,6 +506,24 @@
                 console.error("Error al cargar vehículos:", error);
                 catalog.innerHTML = `<div class="col-span-full text-center py-12 text-red-500"><p>Error al conectar con la base de datos.</p></div>`;
             }
+        }
+
+        function openEditModal(carId) {
+            const car = vehiclesData.find(v => v.id === carId);
+            if (!car) return;
+
+            document.getElementById('edit-id').value = car.id;
+            document.getElementById('edit-title').value = car.title;
+            document.getElementById('edit-year').value = car.year;
+            document.getElementById('edit-km').value = car.km;
+            document.getElementById('edit-price').value = car.price;
+            document.getElementById('edit-fuel').value = car.fuel;
+            document.getElementById('edit-description').value = car.description;
+
+            editFileInput.value = "";
+            editFilesCountMsg.classList.add('hidden');
+
+            editModal.classList.remove('hidden');
         }
 
         window.openGallery = function(carId) {
