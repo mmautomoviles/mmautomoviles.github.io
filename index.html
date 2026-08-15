@@ -3,89 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MM Automóviles</title>
+    <title>MM Automóviles | Venta de Vehículos Seleccionados</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
     <!-- Header / Navbar -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-lg">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wider text-red-500 flex items-center gap-2">
-                <i class="fa-solid fa-car"></i> MM Automóviles
-            </h1>
-            <button id="adminBtn" class="bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-lg transition text-slate-200 flex items-center gap-2">
-                <i class="fa-solid fa-lock"></i> Acceso Admin
-            </button>
+    <header class="bg-slate-950/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="bg-red-600 text-white p-2.5 rounded-xl shadow-lg shadow-red-600/30 group-hover:scale-105 transition">
+                    <i class="fa-solid fa-car text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-extrabold tracking-wider text-white block leading-none">MM <span class="text-red-500">AUTOMÓVILES</span></span>
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400">Vehículos Seleccionados</span>
+                </div>
+            </a>
+
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/59800000000" target="_blank" class="hidden sm:flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Contacto Directo</span>
+                </a>
+                <button id="adminBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium px-4 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear text-red-500"></i>
+                    <span>Acceso</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-6xl mx-auto p-4 w-full flex-grow">
-        <h2 class="text-xl font-semibold mb-6 text-slate-300 border-b border-slate-800 pb-2">Catálogo de Vehículos</h2>
-        <div id="catalog" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <p class="text-slate-400 col-span-full text-center py-10">Cargando vehículos...</p>
+    <!-- Hero Section -->
+    <section class="hero-bg py-16 px-4 text-center border-b border-slate-800">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <span class="bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider inline-block">
+                Tu próximo auto está aquí
+            </span>
+            <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                Encontrá el vehículo ideal para vos
+            </h2>
+            <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+                Calidad, confianza y la mejor atención personalizada de Uruguay.
+            </p>
+            
+            <!-- Buscador -->
+            <div class="pt-4 max-w-xl mx-auto">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por marca, modelo o año..." class="w-full bg-slate-950/80 border border-slate-700 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catálogo de Vehículos -->
+    <main class="max-w-7xl mx-auto px-4 py-12 w-full flex-grow">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-car-side text-red-500"></i> Catálogo Disponible
+            </h3>
+            <span id="carCount" class="text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">0 autos</span>
+        </div>
+
+        <div id="catalog" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-full text-center py-16 text-slate-400">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-red-500 mb-3"></i>
+                <p>Cargando catálogo...</p>
+            </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-950 border-t border-slate-800 text-center p-4 text-xs text-slate-500">
-        &copy; MM Automóviles. Todos los derechos reservados.
+    <footer class="bg-slate-950 border-t border-slate-800 py-8 px-4 text-center text-xs text-slate-500 space-y-2">
+        <p class="font-bold text-slate-400 text-sm">MM Automóviles</p>
+        <p>&copy; Todos los derechos reservados.</p>
     </footer>
 
-    <!-- Modal Admin -->
-    <div id="adminModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-slate-800 rounded-xl max-w-lg w-full p-6 border border-slate-700 relative max-h-[90vh] overflow-y-auto">
-            <button id="closeModal" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+    <!-- Modal Admin / Acceso -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button id="closeModal" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
 
-            <!-- Login Form -->
+            <!-- 1. Pantalla de Login -->
             <div id="loginForm" class="space-y-4">
-                <h3 class="text-xl font-bold text-slate-100">Iniciar Sesión</h3>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Contraseña de administrador</label>
-                    <input type="password" id="adminPassword" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white outline-none focus:border-red-500" placeholder="Ingrese contraseña">
+                <div class="text-center space-y-1">
+                    <div class="w-12 h-12 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-lock text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Acceso Administrador</h3>
+                    <p class="text-xs text-slate-400">Ingresá tu contraseña para gestionar el catálogo.</p>
                 </div>
-                <button id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold transition">Ingresar</button>
+                <div>
+                    <input type="password" id="adminPassword" placeholder="Contraseña de acceso" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500 transition">
+                </div>
+                <button id="loginBtn" class="w-full bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl font-semibold text-sm transition shadow-lg shadow-red-600/20">
+                    Ingresar
+                </button>
             </div>
 
-            <!-- Panel de Administración -->
+            <!-- 2. Formulario de Publicación (Solo si está logueado) -->
             <div id="adminPanel" class="space-y-4 hidden">
-                <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                    <h3 class="text-xl font-bold text-slate-100">Agregar Nuevo Vehículo</h3>
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-green-500"></i> Publicar Auto
+                    </h3>
                     <button id="logoutBtn" class="text-xs text-red-400 hover:underline">Cerrar sesión</button>
                 </div>
                 
                 <form id="addCarForm" class="space-y-3">
                     <div>
-                        <label class="block text-xs text-slate-400">Marca y Modelo</label>
-                        <input type="text" id="carTitle" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white" placeholder="Ej: Chevrolet Onix 1.0">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Marca y Modelo</label>
+                        <input type="text" id="carTitle" required placeholder="Ej: Chevrolet Onix 1.0" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs text-slate-400">Año</label>
-                            <input type="number" id="carYear" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white" placeholder="2021">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Año</label>
+                            <input type="number" id="carYear" required placeholder="2021" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400">Precio (USD)</label>
-                            <input type="number" id="carPrice" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white" placeholder="12500">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Precio (USD)</label>
+                            <input type="number" id="carPrice" required placeholder="12500" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400">URL de la Imagen (Link)</label>
-                        <input type="url" id="carImageUrl" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white" placeholder="https://ejemplo.com/foto.jpg">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">URL de la Imagen (Imgur/Drive)</label>
+                        <input type="url" id="carImageUrl" required placeholder="https://i.imgur.com/ejemplo.jpg" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400">Descripción / Detalles</label>
-                        <textarea id="carDesc" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white" placeholder="Ej: Excelente estado, 45.000 km, único dueño."></textarea>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Descripción / Detalles</label>
+                        <textarea id="carDesc" rows="3" placeholder="Ej: Único dueño, 45.000 km, ficha en service oficial." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-red-500"></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded font-semibold transition">Publicar Vehículo</button>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg shadow-green-600/20">
+                        Guardar y Publicar
+                    </button>
                 </form>
             </div>
-
         </div>
     </div>
 
@@ -94,7 +159,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIGURACIÓN DE FIREBASE (Reemplazar con tus datos)
+        // ==========================================
+        // REEMPLAZÁ CON TUS CLAVES DE FIREBASE AQUÍ
+        // ==========================================
         const firebaseConfig = {
             apiKey: "TU_API_KEY",
             authDomain: "TU_PROJECT_ID.firebaseapp.com",
@@ -107,7 +174,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Referencias DOM
+        // CONFIGURÁ TU CONTRASEÑA DE ACCESO AQUÍ
+        const ADMIN_PASSWORD = "admin"; 
+
+        // Referencias
         const adminBtn = document.getElementById('adminBtn');
         const adminModal = document.getElementById('adminModal');
         const closeModal = document.getElementById('closeModal');
@@ -117,21 +187,24 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const addCarForm = document.getElementById('addCarForm');
         const catalog = document.getElementById('catalog');
+        const searchInput = document.getElementById('searchInput');
+        const carCount = document.getElementById('carCount');
 
         let isAdmin = false;
+        let carsData = [];
 
-        // Abrir/Cerrar Modal
+        // Modal
         adminBtn.onclick = () => adminModal.classList.remove('hidden');
         closeModal.onclick = () => adminModal.classList.add('hidden');
 
-        // Login simple
+        // Login
         loginBtn.onclick = () => {
             const pass = document.getElementById('adminPassword').value;
-            if (pass === "admin123") { // Podés cambiar esta contraseña
+            if (pass === ADMIN_PASSWORD) {
                 isAdmin = true;
                 loginForm.classList.add('hidden');
                 adminPanel.classList.remove('hidden');
-                renderCatalog();
+                renderCars(carsData);
             } else {
                 alert("Contraseña incorrecta");
             }
@@ -142,10 +215,10 @@
             adminPanel.classList.add('hidden');
             loginForm.classList.remove('hidden');
             document.getElementById('adminPassword').value = '';
-            renderCatalog();
+            renderCars(carsData);
         };
 
-        // Guardar auto en Firestore
+        // Guardar auto
         addCarForm.onsubmit = async (e) => {
             e.preventDefault();
             const title = document.getElementById('carTitle').value;
@@ -159,68 +232,94 @@
                     title, year, price, imageUrl, desc, createdAt: new Date()
                 });
                 addCarForm.reset();
+                adminModal.classList.add('hidden');
                 alert("¡Vehículo publicado con éxito!");
-                renderCatalog();
+                fetchCars();
             } catch (err) {
                 console.error(err);
-                alert("Error al publicar el vehículo.");
+                alert("Error al guardar el vehículo.");
             }
         };
 
-        // Cargar autos desde Firestore
-        async function renderCatalog() {
-            catalog.innerHTML = "<p class='text-slate-400 col-span-full text-center py-10'>Cargando catálogo...</p>";
+        // Cargar autos
+        async function fetchCars() {
             try {
                 const querySnapshot = await getDocs(collection(db, "autos"));
-                if (querySnapshot.empty) {
-                    catalog.innerHTML = "<p class='text-slate-500 col-span-full text-center py-10'>No hay vehículos publicados aún.</p>";
-                    return;
-                }
-
-                catalog.innerHTML = "";
-                querySnapshot.forEach((docSnapshot) => {
-                    const car = docSnapshot.data();
-                    const carId = docSnapshot.id;
-
-                    const card = document.createElement('div');
-                    card.className = "bg-slate-800 rounded-xl overflow-hidden border border-slate-700 shadow-md flex flex-col justify-between";
-                    card.innerHTML = `
-                        <div>
-                            <img src="${car.imageUrl}" alt="${car.title}" class="w-full h-48 object-cover bg-slate-900" onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'">
-                            <div class="p-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="font-bold text-lg text-white">${car.title}</h3>
-                                    <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">${car.year}</span>
-                                </div>
-                                <p class="text-2xl font-bold text-green-400 mb-2">U$S ${car.price}</p>
-                                <p class="text-xs text-slate-400 line-clamp-3">${car.desc || ''}</p>
-                            </div>
-                        </div>
-                        ${isAdmin ? `
-                            <div class="p-4 pt-0">
-                                <button onclick="deleteCar('${carId}')" class="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 py-1 rounded text-xs transition border border-red-500/30">
-                                    <i class="fa-solid fa-trash"></i> Eliminar publicación
-                                </button>
-                            </div>
-                        ` : ''}
-                    `;
-                    catalog.appendChild(card);
+                carsData = [];
+                querySnapshot.forEach((docSnap) => {
+                    carsData.push({ id: docSnap.id, ...docSnap.data() });
                 });
+                renderCars(carsData);
             } catch (err) {
                 console.error(err);
-                catalog.innerHTML = "<p class='text-red-400 col-span-full text-center py-10'>Error al cargar el catálogo.</p>";
+                catalog.innerHTML = "<p class='col-span-full text-center py-10 text-red-400'>Error al conectar con la base de datos.</p>";
             }
+        }
+
+        // Renderizar lista
+        function renderCars(list) {
+            carCount.innerText = `${list.length} vehiculo${list.length !== 1 ? 's' : ''}`;
+
+            if (list.length === 0) {
+                catalog.innerHTML = `
+                    <div class="col-span-full text-center py-16 text-slate-500">
+                        <i class="fa-solid fa-car text-4xl mb-3 block"></i>
+                        <p class="font-medium">No se encontraron vehículos publicadas.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            catalog.innerHTML = list.map(car => `
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between group hover:border-slate-700 transition">
+                    <div>
+                        <div class="relative h-52 bg-slate-900 overflow-hidden">
+                            <img src="${car.imageUrl}" alt="${car.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://via.placeholder.com/600x400?text=Sin+Imagen'">
+                            <span class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md text-slate-300 text-xs font-semibold px-3 py-1 rounded-full border border-slate-800">
+                                ${car.year}
+                            </span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <h4 class="font-bold text-lg text-white group-hover:text-red-400 transition">${car.title}</h4>
+                            <p class="text-2xl font-black text-emerald-400">U$S ${Number(car.price).toLocaleString()}</p>
+                            <p class="text-xs text-slate-400 leading-relaxed line-clamp-3">${car.desc || 'Sin descripción adicional.'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 pt-0 space-y-2">
+                        <a href="https://wa.me/59800000000?text=Hola,%20estoy%20interesado%20en%20el%20${encodeURIComponent(car.title)}" target="_blank" class="w-full bg-slate-800 hover:bg-emerald-600 text-slate-200 hover:text-white py-2.5 rounded-xl font-medium text-xs transition flex items-center justify-center gap-2 border border-slate-700 hover:border-emerald-500">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Consultar
+                        </a>
+
+                        ${isAdmin ? `
+                            <button onclick="deleteCar('${car.id}')" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs font-medium transition border border-red-500/20 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
         // Eliminar auto
         window.deleteCar = async (id) => {
-            if (confirm("¿Estás seguro de eliminar esta publicación?")) {
+            if (confirm("¿Estás seguro de eliminar este vehículo?")) {
                 await deleteDoc(doc(db, "autos", id));
-                renderCatalog();
+                fetchCars();
             }
         };
 
-        renderCatalog();
+        // Buscador en tiempo real
+        searchInput.oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = carsData.filter(car => 
+                car.title.toLowerCase().includes(term) || 
+                car.year.toString().includes(term)
+            );
+            renderCars(filtered);
+        };
+
+        fetchCars();
     </script>
 </body>
 </html>
