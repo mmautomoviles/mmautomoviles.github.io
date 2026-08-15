@@ -238,7 +238,6 @@
         let isAuthenticated = false;
         let vehiclesData = [];
 
-        // Listas temporales de imágenes Base64 para publicación y edición
         let createBase64Images = [];
         let createCoverIndex = 0;
 
@@ -285,7 +284,7 @@
             }
         });
 
-        // COMPRESIÓN AUTOMÁTICA DE IMÁGENES
+        // COMPRESIÓN AGRESIVA PARA FOTOS DE CELULAR
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -296,8 +295,8 @@
                         let width = img.width;
                         let height = img.height;
                         
-                        // Reducir dimensión máxima a 800px
-                        const max = 800;
+                        // Reducir la dimensión máxima a 600px
+                        const max = 600;
                         if (width > max || height > max) {
                             if (width > height) {
                                 height = Math.round((height * max) / width);
@@ -312,8 +311,8 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // Compresión JPG al 50% para reducir drastically el tamaño
-                        resolve(canvas.toDataURL('image/jpeg', 0.5));
+                        // Compresión JPG al 40%
+                        resolve(canvas.toDataURL('image/jpeg', 0.4));
                     };
                     img.src = e.target.result;
                 };
@@ -332,7 +331,7 @@
             }
         });
 
-        // CARGA Y VISTA PREVIA PARA EDICIÓN DE VEHÍCULO
+        // CARGA Y VISTA PREVIA PARA EDICIÓN
         editFileInput.addEventListener('change', async () => {
             const files = Array.from(editFileInput.files);
             if (files.length > 0) {
@@ -400,7 +399,6 @@
             btn.innerText = "Publicando...";
 
             try {
-                // Reordenar para que la foto de portada quede al principio (index 0)
                 const sortedImages = [
                     createBase64Images[createCoverIndex],
                     ...createBase64Images.filter((_, i) => i !== createCoverIndex)
@@ -538,7 +536,6 @@
                     catalog.appendChild(card);
                 });
 
-                // EVENTOS PARA BOTONES DE EDITAR
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -547,7 +544,6 @@
                     });
                 });
 
-                // EVENTOS PARA BOTONES DE ELIMINAR
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         e.stopPropagation();
