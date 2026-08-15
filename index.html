@@ -13,15 +13,13 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-brand { font-family: 'Montserrat', sans-serif; }
-        .text-silver { color: #d1d5db; }
-        .border-red-glow { border-color: #dc2626; box-shadow: 0 0 10px rgba(220, 38, 38, 0.2); }
     </style>
 </head>
 <body class="bg-black text-gray-200 min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
 
     <!-- NAV BAR -->
     <header class="bg-zinc-950 border-b border-zinc-800 text-white sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <!-- LOGO TEXTUAL ESTILO IMAGEN -->
             <div class="flex items-center space-x-2 font-brand cursor-pointer">
                 <div class="text-3xl font-black tracking-tighter">
@@ -32,11 +30,26 @@
                 </div>
             </div>
             
-            <!-- BOTÓN ACCESO -->
-            <button id="open-modal-btn" class="bg-zinc-900 hover:bg-red-600/20 text-red-500 hover:text-red-400 border border-red-600/50 font-bold px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 text-sm shadow-lg shadow-red-950/20">
-                <i class="fa-solid fa-lock text-xs"></i>
-                <span>Acceso</span>
-            </button>
+            <!-- BOTONES DE ACCIÓN SUPERIOR -->
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <!-- VENDER AUTO (WHATSAPP DIRECTO) -->
+                <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quiero%20vender%20mi%20auto%20y%20me%20gustaría%20recibir%20más%20información." target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs shadow-lg shadow-red-950/40">
+                    <i class="fa-solid fa-car text-xs"></i>
+                    <span>Quiero vender mi auto</span>
+                </a>
+
+                <!-- FINANCIACIÓN -->
+                <button id="open-finance-btn" class="bg-zinc-900 hover:bg-zinc-800 text-gray-200 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs">
+                    <i class="fa-solid fa-calculator text-red-500 text-xs"></i>
+                    <span>Financiación</span>
+                </button>
+
+                <!-- ACCESO ADMIN -->
+                <button id="open-modal-btn" class="bg-zinc-900 hover:bg-red-600/20 text-red-500 hover:text-red-400 border border-red-600/50 font-bold px-3 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span>Acceso</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -75,6 +88,55 @@
     <footer class="bg-zinc-950 text-gray-500 py-6 border-t border-zinc-900 text-center text-xs">
         <p>&copy; 2026 <span class="text-gray-300 font-bold">MM</span> <span class="text-red-600 font-bold">AUTOMÓVILES</span>. Todos los derechos reservados.</p>
     </footer>
+
+    <!-- MODAL DE FINANCIACIÓN -->
+    <div id="finance-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button id="close-finance-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            <div class="text-center mb-6">
+                <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
+                    <i class="fa-solid fa-percent text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white font-brand">Financiación</h3>
+                <p class="text-red-500 font-bold text-lg mt-1">De hasta un 50%</p>
+            </div>
+            
+            <div class="space-y-3 text-sm text-gray-300 bg-black/50 p-4 rounded-xl border border-zinc-800/80 mb-6">
+                <p class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-2">Requisitos:</p>
+                <ul class="space-y-2 text-xs sm:text-sm">
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
+                        <span>6 meses de antigüedad laboral</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
+                        <span>Último recibo de sueldo</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
+                        <span>Constancia de domicilio (UTE, OSE, ANTEL, etc.)</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
+                        <span>Cédula vigente</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
+                        <span>Ingreso mín. $20.000 líquidos</span>
+                    </li>
+                    <li class="flex items-start space-x-2 text-gray-400 italic pt-1">
+                        <i class="fa-solid fa-info-circle text-red-500/80 mt-1"></i>
+                        <span>Posible Clearing sujeto a aprobación crediticia</span>
+                    </li>
+                </ul>
+            </div>
+
+            <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quisiera%20consultar%20por%20la%20financiación." target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-sm shadow-lg shadow-green-950/30">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>Consultar por financiación</span>
+            </a>
+        </div>
+    </div>
 
     <!-- MODAL DE PUBLICACIÓN / ADMIN -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
@@ -252,7 +314,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const PHONE_NUMBER = "59899321154"; // Número oficial configurado (099321154 con código de Uruguay)
+        const PHONE_NUMBER = "59899321154";
         const ADMIN_PASSWORD = "admin";
         let isAuthenticated = false;
         let vehiclesData = [];
@@ -269,6 +331,10 @@
         const authForm = document.getElementById('auth-form');
         const vehicleForm = document.getElementById('vehicle-form');
         
+        const financeModal = document.getElementById('finance-modal');
+        const openFinanceBtn = document.getElementById('open-finance-btn');
+        const closeFinanceModalBtn = document.getElementById('close-finance-modal-btn');
+
         const editModal = document.getElementById('edit-modal');
         const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
         const editVehicleForm = document.getElementById('edit-vehicle-form');
@@ -284,6 +350,10 @@
 
         openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+        openFinanceBtn.addEventListener('click', () => financeModal.classList.remove('hidden'));
+        closeFinanceModalBtn.addEventListener('click', () => financeModal.classList.add('hidden'));
+
         closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
         closeGalleryBtn.addEventListener('click', () => galleryModal.classList.add('hidden'));
 
@@ -303,7 +373,6 @@
             }
         });
 
-        // COMPRESIÓN AGRESIVA DE IMÁGENES
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
