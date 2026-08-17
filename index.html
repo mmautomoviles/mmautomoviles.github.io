@@ -32,10 +32,10 @@
             
             <!-- BOTONES DE ACCIÓN SUPERIOR -->
             <div class="flex flex-wrap items-center justify-center gap-2">
-                <!-- VENDER VEHICULO (WHATSAPP DIRECTO) -->
+                <!-- VENDER AUTO (WHATSAPP DIRECTO) -->
                 <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quiero%20vender%20mi%20auto%20y%20me%20gustaría%20recibir%20más%20información." target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs shadow-lg shadow-red-950/40">
                     <i class="fa-solid fa-car text-xs"></i>
-                    <span>Quiero vender mi auto</span>
+                    <span>Quiero vender mi vehiculo</span>
                 </a>
 
                 <!-- FINANCIACIÓN -->
@@ -64,7 +64,7 @@
     <!-- MAIN CONTENT / CATALOG -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
         <!-- BARRA DE FILTROS Y ORDENAMIENTO -->
-        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-8 shadow-lg">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-6 shadow-lg">
             <div class="flex items-center justify-between mb-3 border-b border-zinc-800/80 pb-2">
                 <span class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
                     <i class="fa-solid fa-filter text-red-600"></i>
@@ -107,6 +107,23 @@
             </div>
         </div>
 
+        <!-- BANNER DE BÚSQUEDA PERSONALIZADA -->
+        <div class="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-xl p-4 sm:p-5 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center space-x-3 text-center md:text-left">
+                <div class="hidden sm:flex p-3 bg-red-950/40 border border-red-800/40 rounded-full text-red-500 shrink-0">
+                    <i class="fa-solid fa-magnifying-glass-location text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold text-white font-brand">¿Buscás un auto específico que no está en el catálogo?</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Lo encontramos por vos al mejor precio y en impecable estado.</p>
+                </div>
+            </div>
+            <button id="open-custom-search-btn" class="w-full md:w-auto bg-zinc-900 hover:bg-red-600 text-gray-200 hover:text-white border border-zinc-700 hover:border-red-600 font-bold px-4 py-2.5 rounded-lg transition duration-300 flex items-center justify-center space-x-2 text-xs shrink-0 shadow-md">
+                <i class="fa-solid fa-magnifying-glass text-red-500 hover:text-white"></i>
+                <span>Servicio de búsqueda personalizada</span>
+            </button>
+        </div>
+
         <div class="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
             <h2 class="text-xl sm:text-2xl font-bold text-white font-brand flex items-center space-x-2">
                 <span class="w-2 h-6 bg-red-600 rounded-full inline-block"></span>
@@ -128,6 +145,40 @@
     <footer class="bg-zinc-950 text-gray-500 py-6 border-t border-zinc-900 text-center text-xs">
         <p>&copy; 2026 <span class="text-gray-300 font-bold">MM</span> <span class="text-red-600 font-bold">AUTOMÓVILES</span>. Todos los derechos reservados.</p>
     </footer>
+
+    <!-- MODAL BÚSQUEDA PERSONALIZADA -->
+    <div id="custom-search-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button id="close-custom-search-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            <div class="text-center mb-6">
+                <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
+                    <i class="fa-solid fa-magnifying-glass-car text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white font-brand">Búsqueda Personalizada</h3>
+                <p class="text-xs text-gray-400 mt-1">Ingresá los datos del vehículo que estás buscando y nos pondremos en contacto.</p>
+            </div>
+            
+            <form id="custom-search-form" class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nombre y Apellido</label>
+                    <input type="text" id="custom-name" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. Juan Pérez" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Marca y Modelo buscado</label>
+                    <input type="text" id="custom-car" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. Volkswagen Gol Trend 2018" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Presupuesto aproximado (USD)</label>
+                    <input type="number" id="custom-budget" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. 12000" required>
+                </div>
+                
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-sm shadow-lg shadow-green-950/30">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Solicitar por WhatsApp</span>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- MODAL DE FINANCIACIÓN -->
     <div id="finance-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
@@ -394,6 +445,12 @@
         const filterSort = document.getElementById('filter-sort');
         const resetFiltersBtn = document.getElementById('reset-filters-btn');
 
+        // ELEMENTOS DE BÚSQUEDA PERSONALIZADA
+        const customSearchModal = document.getElementById('custom-search-modal');
+        const openCustomSearchBtn = document.getElementById('open-custom-search-btn');
+        const closeCustomSearchModalBtn = document.getElementById('close-custom-search-modal-btn');
+        const customSearchForm = document.getElementById('custom-search-form');
+
         openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
@@ -402,6 +459,25 @@
 
         closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
         closeGalleryBtn.addEventListener('click', () => galleryModal.classList.add('hidden'));
+
+        openCustomSearchBtn.addEventListener('click', () => customSearchModal.classList.remove('hidden'));
+        closeCustomSearchModalBtn.addEventListener('click', () => customSearchModal.classList.add('hidden'));
+
+        // PROCESAR FORMULARIO DE BÚSQUEDA PERSONALIZADA
+        customSearchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('custom-name').value;
+            const car = document.getElementById('custom-car').value;
+            const budget = document.getElementById('custom-budget').value;
+
+            const text = `Hola MM Automóviles, me gustaría solicitar el servicio de búsqueda personalizada:\n\n*Nombre y Apellido:* ${name}\n*Vehículo buscado:* ${car}\n*Presupuesto aproximado:* U$S ${Number(budget).toLocaleString()}`;
+            
+            const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(text)}`;
+            window.open(waUrl, '_blank');
+            
+            customSearchForm.reset();
+            customSearchModal.classList.add('hidden');
+        });
 
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
