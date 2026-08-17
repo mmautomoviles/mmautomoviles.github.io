@@ -21,7 +21,7 @@
     <header class="bg-zinc-950 border-b border-zinc-800 text-white sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <!-- LOGO TEXTUAL ESTILO IMAGEN -->
-            <div class="flex items-center space-x-2 font-brand cursor-pointer">
+            <div class="flex items-center space-x-2 font-brand cursor-pointer" onclick="resetFilters()">
                 <div class="text-3xl font-black tracking-tighter">
                     <span class="text-gray-300">M</span><span class="text-red-600">M</span>
                 </div>
@@ -63,7 +63,51 @@
 
     <!-- MAIN CONTENT / CATALOG -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-        <div class="flex justify-between items-center mb-8 border-b border-zinc-800 pb-4">
+        <!-- BARRA DE FILTROS Y ORDENAMIENTO -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-8 shadow-lg">
+            <div class="flex items-center justify-between mb-3 border-b border-zinc-800/80 pb-2">
+                <span class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-filter text-red-600"></i>
+                    Filtrar Vehículos
+                </span>
+                <button id="reset-filters-btn" class="text-xs text-gray-400 hover:text-red-500 transition flex items-center gap-1">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Limpiar filtros
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- FILTRO TIPO DE COMBUSTIBLE -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-400 mb-1">Motorización / Tipo</label>
+                    <select id="filter-fuel" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg focus:ring-1 focus:ring-red-600 focus:outline-none text-xs">
+                        <option value="all">Todos los tipos</option>
+                        <option value="combustion">Combustión (Nafta / Diésel)</option>
+                        <option value="Híbrido">Híbrido</option>
+                        <option value="Eléctrico">Eléctrico</option>
+                    </select>
+                </div>
+
+                <!-- FILTRO MARCA -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-400 mb-1">Marca</label>
+                    <select id="filter-brand" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg focus:ring-1 focus:ring-red-600 focus:outline-none text-xs">
+                        <option value="all">Todas las marcas</option>
+                    </select>
+                </div>
+
+                <!-- ORDEN POR PRECIO -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-400 mb-1">Ordenar por</label>
+                    <select id="filter-sort" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg focus:ring-1 focus:ring-red-600 focus:outline-none text-xs">
+                        <option value="default">Más recientes</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
             <h2 class="text-xl sm:text-2xl font-bold text-white font-brand flex items-center space-x-2">
                 <span class="w-2 h-6 bg-red-600 rounded-full inline-block"></span>
                 <span>Vehículos Disponibles</span>
@@ -344,6 +388,12 @@
         const editFileInput = document.getElementById('edit-image-files');
         const editPreviewContainer = document.getElementById('edit-preview-container');
 
+        // ELEMENTOS DE FILTROS
+        const filterFuel = document.getElementById('filter-fuel');
+        const filterBrand = document.getElementById('filter-brand');
+        const filterSort = document.getElementById('filter-sort');
+        const resetFiltersBtn = document.getElementById('reset-filters-btn');
+
         openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
@@ -363,7 +413,7 @@
                 errorMsg.classList.add('hidden');
                 document.getElementById('auth-step').classList.add('hidden');
                 document.getElementById('form-step').classList.remove('hidden');
-                loadVehicles();
+                renderCatalog();
             } else {
                 errorMsg.classList.remove('hidden');
             }
@@ -553,92 +603,152 @@
 
         async function loadVehicles() {
             const catalog = document.getElementById('catalog');
-            const vehicleCount = document.getElementById('vehicle-count');
-
             try {
                 const querySnapshot = await getDocs(collection(db, "vehicles"));
-                catalog.innerHTML = "";
                 vehiclesData = [];
                 
-                let count = 0;
                 querySnapshot.forEach((docSnap) => {
-                    count++;
                     const data = docSnap.data();
                     const carId = docSnap.id;
-                    
                     const images = data.images && data.images.length > 0 ? data.images : (data.image ? [data.image] : []);
-                    const mainImage = images[0] || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800';
-
                     vehiclesData.push({ id: carId, ...data, images });
-
-                    const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(`Hola MM Automóviles, me interesa consultar por el vehículo: ${data.title}`)}`;
-
-                    const card = document.createElement('div');
-                    card.className = "bg-zinc-950 rounded-xl border border-zinc-800/80 overflow-hidden hover:border-red-600/60 transition duration-300 flex flex-col justify-between group shadow-xl";
-                    card.innerHTML = `
-                        <div onclick="openGallery('${carId}')" class="cursor-pointer">
-                            <div class="relative h-52 bg-black overflow-hidden">
-                                <img src="${mainImage}" alt="${data.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90 group-hover:opacity-100">
-                                <span class="absolute top-3 right-3 bg-black/80 border border-zinc-700 text-red-500 text-[11px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-md uppercase tracking-wider">${data.fuel}</span>
-                                ${images.length > 1 ? `<span class="absolute bottom-3 right-3 bg-black/80 text-gray-300 text-xs px-2 py-1 rounded-lg border border-zinc-800"><i class="fa-solid fa-images mr-1 text-red-500"></i>${images.length}</span>` : ''}
-                            </div>
-                            <div class="p-5">
-                                <h3 class="text-lg font-bold font-brand text-white mb-2 group-hover:text-red-500 transition">${data.title}</h3>
-                                <div class="flex items-center space-x-4 text-xs font-semibold text-gray-400 mb-3">
-                                    <span><i class="fa-solid fa-calendar text-red-600 mr-1.5"></i>${data.year}</span>
-                                    <span><i class="fa-solid fa-gauge-high text-red-600 mr-1.5"></i>${Number(data.km).toLocaleString()} km</span>
-                                </div>
-                                <p class="text-gray-400 text-xs line-clamp-2 leading-relaxed">${data.description}</p>
-                            </div>
-                        </div>
-                        <div class="p-5 bg-zinc-900/50 border-t border-zinc-800/80 flex justify-between items-center">
-                            <div>
-                                <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider block">Precio</span>
-                                <span class="text-xl font-extrabold text-white font-brand">U$S ${Number(data.price).toLocaleString()}</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                ${isAuthenticated ? `
-                                    <button data-id="${carId}" class="edit-btn bg-zinc-800 hover:bg-zinc-700 text-blue-400 p-2 rounded-lg transition"><i class="fa-solid fa-pen"></i></button>
-                                    <button data-id="${carId}" class="delete-btn bg-zinc-800 hover:bg-zinc-700 text-red-500 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
-                                ` : ''}
-                                <a href="${waUrl}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-3.5 py-2 rounded-lg transition text-xs flex items-center space-x-1.5 shadow-md shadow-green-950/20">
-                                    <i class="fa-brands fa-whatsapp text-sm"></i>
-                                    <span>Consultar</span>
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    catalog.appendChild(card);
                 });
 
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        openEditModal(e.currentTarget.getAttribute('data-id'));
-                    });
-                });
-
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.stopPropagation();
-                        const id = e.currentTarget.getAttribute('data-id');
-                        if (confirm("¿Eliminar esta publicación?")) {
-                            await deleteDoc(doc(db, "vehicles", id));
-                            loadVehicles();
-                        }
-                    });
-                });
-
-                vehicleCount.innerText = `${count} disponibles`;
-
-                if (count === 0) {
-                    catalog.innerHTML = `<div class="col-span-full text-center py-16 text-gray-500"><i class="fa-solid fa-car text-4xl mb-3 text-zinc-800"></i><p class="text-sm">No hay vehículos cargados actualmente.</p></div>`;
-                }
+                populateBrandFilter();
+                renderCatalog();
             } catch (error) {
                 console.error(error);
                 catalog.innerHTML = `<div class="col-span-full text-center py-16 text-red-500 text-sm"><p>Error al conectar con la base de datos.</p></div>`;
             }
         }
+
+        function populateBrandFilter() {
+            const brands = new Set();
+            vehiclesData.forEach(v => {
+                const brand = v.title.trim().split(' ')[0];
+                if (brand) brands.add(brand.toUpperCase());
+            });
+
+            filterBrand.innerHTML = '<option value="all">Todas las marcas</option>';
+            Array.from(brands).sort().forEach(brand => {
+                const opt = document.createElement('option');
+                opt.value = brand;
+                opt.innerText = brand;
+                filterBrand.appendChild(opt);
+            });
+        }
+
+        function renderCatalog() {
+            const catalog = document.getElementById('catalog');
+            const vehicleCount = document.getElementById('vehicle-count');
+
+            let filtered = [...vehiclesData];
+
+            // Filtro Combustible / Motorización
+            const fuelVal = filterFuel.value;
+            if (fuelVal === 'combustion') {
+                filtered = filtered.filter(v => v.fuel === 'Nafta' || v.fuel === 'Diésel');
+            } else if (fuelVal !== 'all') {
+                filtered = filtered.filter(v => v.fuel === fuelVal);
+            }
+
+            // Filtro Marca
+            const brandVal = filterBrand.value;
+            if (brandVal !== 'all') {
+                filtered = filtered.filter(v => v.title.trim().toUpperCase().startsWith(brandVal));
+            }
+
+            // Ordenamiento por Precio
+            const sortVal = filterSort.value;
+            if (sortVal === 'price-asc') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortVal === 'price-desc') {
+                filtered.sort((a, b) => b.price - a.price);
+            }
+
+            catalog.innerHTML = "";
+            vehicleCount.innerText = `${filtered.length} disponibles`;
+
+            if (filtered.length === 0) {
+                catalog.innerHTML = `<div class="col-span-full text-center py-16 text-gray-500"><i class="fa-solid fa-car-side text-4xl mb-3 text-zinc-800"></i><p class="text-sm">No se encontraron vehículos con los filtros seleccionados.</p></div>`;
+                return;
+            }
+
+            filtered.forEach((data) => {
+                const carId = data.id;
+                const mainImage = data.images[0] || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800';
+                const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(`Hola MM Automóviles, me interesa consultar por el vehículo: ${data.title}`)}`;
+
+                const card = document.createElement('div');
+                card.className = "bg-zinc-950 rounded-xl border border-zinc-800/80 overflow-hidden hover:border-red-600/60 transition duration-300 flex flex-col justify-between group shadow-xl";
+                card.innerHTML = `
+                    <div onclick="openGallery('${carId}')" class="cursor-pointer">
+                        <div class="relative h-52 bg-black overflow-hidden">
+                            <img src="${mainImage}" alt="${data.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90 group-hover:opacity-100">
+                            <span class="absolute top-3 right-3 bg-black/80 border border-zinc-700 text-red-500 text-[11px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-md uppercase tracking-wider">${data.fuel}</span>
+                            ${data.images.length > 1 ? `<span class="absolute bottom-3 right-3 bg-black/80 text-gray-300 text-xs px-2 py-1 rounded-lg border border-zinc-800"><i class="fa-solid fa-images mr-1 text-red-500"></i>${data.images.length}</span>` : ''}
+                        </div>
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold font-brand text-white mb-2 group-hover:text-red-500 transition">${data.title}</h3>
+                            <div class="flex items-center space-x-4 text-xs font-semibold text-gray-400 mb-3">
+                                <span><i class="fa-solid fa-calendar text-red-600 mr-1.5"></i>${data.year}</span>
+                                <span><i class="fa-solid fa-gauge-high text-red-600 mr-1.5"></i>${Number(data.km).toLocaleString()} km</span>
+                            </div>
+                            <p class="text-gray-400 text-xs line-clamp-2 leading-relaxed">${data.description}</p>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-zinc-900/50 border-t border-zinc-800/80 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider block">Precio</span>
+                            <span class="text-xl font-extrabold text-white font-brand">U$S ${Number(data.price).toLocaleString()}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            ${isAuthenticated ? `
+                                <button data-id="${carId}" class="edit-btn bg-zinc-800 hover:bg-zinc-700 text-blue-400 p-2 rounded-lg transition"><i class="fa-solid fa-pen"></i></button>
+                                <button data-id="${carId}" class="delete-btn bg-zinc-800 hover:bg-zinc-700 text-red-500 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
+                            ` : ''}
+                            <a href="${waUrl}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-3.5 py-2 rounded-lg transition text-xs flex items-center space-x-1.5 shadow-md shadow-green-950/20">
+                                <i class="fa-brands fa-whatsapp text-sm"></i>
+                                <span>Consultar</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                catalog.appendChild(card);
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditModal(e.currentTarget.getAttribute('data-id'));
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const id = e.currentTarget.getAttribute('data-id');
+                    if (confirm("¿Eliminar esta publicación?")) {
+                        await deleteDoc(doc(db, "vehicles", id));
+                        loadVehicles();
+                    }
+                });
+            });
+        }
+
+        // EVENT LISTENERS FILTROS
+        filterFuel.addEventListener('change', renderCatalog);
+        filterBrand.addEventListener('change', renderCatalog);
+        filterSort.addEventListener('change', renderCatalog);
+
+        window.resetFilters = function() {
+            filterFuel.value = 'all';
+            filterBrand.value = 'all';
+            filterSort.value = 'default';
+            renderCatalog();
+        };
+
+        resetFiltersBtn.addEventListener('click', resetFilters);
 
         function openEditModal(carId) {
             const car = vehiclesData.find(v => v.id === carId);
