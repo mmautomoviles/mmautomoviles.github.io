@@ -38,6 +38,12 @@
                     <span>Quiero vender mi vehículo</span>
                 </a>
 
+                <!-- SOBRE NOSOTROS -->
+                <button id="open-about-btn" class="bg-zinc-900 hover:bg-zinc-800 text-gray-200 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs">
+                    <i class="fa-solid fa-users text-red-500 text-xs"></i>
+                    <span>Sobre nosotros</span>
+                </button>
+
                 <!-- FINANCIACIÓN -->
                 <button id="open-finance-btn" class="bg-zinc-900 hover:bg-zinc-800 text-gray-200 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs">
                     <i class="fa-solid fa-calculator text-red-500 text-xs"></i>
@@ -56,7 +62,6 @@
     <section class="bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white py-6 px-4 text-center border-b border-zinc-800 relative overflow-hidden">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-950/20 via-transparent to-transparent pointer-events-none"></div>
         <div class="relative z-10 max-w-3xl mx-auto">
-            <p class="text-red-500 font-semibold tracking-wider text-xs sm:text-sm uppercase mb-1">Catálogo Seleccionado & Vehículos de Calidad</p>
             <p class="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">Encontrá tu próximo auto con la mejor atención y confianza.</p>
         </div>
     </section>
@@ -76,7 +81,7 @@
                 <i id="filter-chevron" class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
             </button>
 
-            <!-- BANNER DE BÚSQUEDA PERSONALIZADA (COMPACTO Y ELEGANTE) -->
+            <!-- BANNER DE BÚSQUEDA PERSONALIZADA COMPACTO -->
             <div class="w-full md:w-auto bg-zinc-950/80 border border-zinc-800/80 hover:border-red-600/40 rounded-xl px-4 py-2 flex items-center justify-between gap-4 transition shadow-sm">
                 <div class="flex items-center space-x-2 text-xs">
                     <i class="fa-solid fa-magnifying-glass-location text-red-500"></i>
@@ -152,6 +157,59 @@
     <footer class="bg-zinc-950 text-gray-500 py-6 border-t border-zinc-900 text-center text-xs">
         <p>&copy; 2026 <span class="text-gray-300 font-bold">MM</span> <span class="text-red-600 font-bold">AUTOMÓVILES</span>. Todos los derechos reservados.</p>
     </footer>
+
+    <!-- MODAL SOBRE NOSOTROS -->
+    <div id="about-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button id="close-about-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold transition">&times;</button>
+            
+            <div class="text-center mb-8">
+                <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
+                    <i class="fa-solid fa-handshake text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white font-brand uppercase tracking-tight">Sobre Nosotros</h3>
+                <p class="text-xs text-red-500 font-semibold uppercase tracking-wider mt-1">Reinventando la compra y venta de vehículos</p>
+            </div>
+
+            <div class="space-y-6 text-sm">
+                <!-- QUIÉNES SOMOS -->
+                <div class="bg-black/50 p-5 rounded-xl border border-zinc-800/80">
+                    <h4 class="text-lg font-bold text-white font-brand mb-2 flex items-center space-x-2">
+                        <span class="w-1.5 h-4 bg-red-600 rounded-full inline-block"></span>
+                        <span>¿Quiénes somos?</span>
+                    </h4>
+                    <p class="text-gray-300 leading-relaxed text-xs sm:text-sm">
+                        Somos el puente directo entre propietarios y compradores. Nos especializamos en un servicio de intermediación ágil, transparente y seguro, realizando una minuciosa filtración previa para conectar únicamente a vendedores con <strong class="text-white font-semibold">compradores genuinos y realmente interesados</strong>, optimizando el tiempo y la tranquilidad de ambas partes.
+                    </p>
+                </div>
+
+                <!-- DIFERENCIALES -->
+                <div class="bg-black/50 p-5 rounded-xl border border-zinc-800/80">
+                    <h4 class="text-lg font-bold text-white font-brand mb-3 flex items-center space-x-2">
+                        <span class="w-1.5 h-4 bg-red-600 rounded-full inline-block"></span>
+                        <span>¿En qué nos diferenciamos de una automotora tradicional?</span>
+                    </h4>
+                    <ul class="space-y-3 text-xs sm:text-sm text-gray-300">
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-circle-check text-red-500 mt-0.5 text-base shrink-0"></i>
+                            <span><strong class="text-white font-semibold">Vos fijás el valor:</strong> El precio final de tu auto lo decidís vos. Nosotros te brindamos un asesoramiento de mercado profesional para potenciar la venta, pero la palabra final siempre es tuya.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-circle-check text-red-500 mt-0.5 text-base shrink-0"></i>
+                            <span><strong class="text-white font-semibold">Sin perder tu movilidad:</strong> No tenés que dejar tu vehículo parado en ningún salón ni predio. Seguís usándolo en tu día a día con total normalidad hasta el momento exacto en que se concrete la operación.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20me%20gustaría%20recibir%20más%20información%20sobre%20sus%20servicios." target="_blank" class="inline-flex bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition duration-200 items-center justify-center space-x-2 text-xs sm:text-sm shadow-lg shadow-red-950/40 w-full sm:w-auto">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Hablar con un asesor</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL BÚSQUEDA PERSONALIZADA -->
     <div id="custom-search-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
@@ -412,7 +470,7 @@
 
         // TELÉFONOS CONFIGURADOS
         const PHONE_NUMBER = "59899321154"; // General
-        const CUSTOM_SEARCH_PHONE = "59896215776"; // Exclusivo para Búsqueda Personalizada
+        const CUSTOM_SEARCH_PHONE = "59896215776"; // Búsqueda Personalizada
 
         const ADMIN_PASSWORD = "admin";
         let isAuthenticated = false;
@@ -434,6 +492,10 @@
         const openFinanceBtn = document.getElementById('open-finance-btn');
         const closeFinanceModalBtn = document.getElementById('close-finance-modal-btn');
 
+        const aboutModal = document.getElementById('about-modal');
+        const openAboutBtn = document.getElementById('open-about-btn');
+        const closeAboutModalBtn = document.getElementById('close-about-modal-btn');
+
         const editModal = document.getElementById('edit-modal');
         const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
         const editVehicleForm = document.getElementById('edit-vehicle-form');
@@ -447,7 +509,7 @@
         const editFileInput = document.getElementById('edit-image-files');
         const editPreviewContainer = document.getElementById('edit-preview-container');
 
-        // ELEMENTOS DE FILTROS & DESPLIEGUE
+        // ELEMENTOS DE FILTROS
         const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
         const filtersContainer = document.getElementById('filters-container');
         const filterChevron = document.getElementById('filter-chevron');
@@ -475,13 +537,16 @@
         openFinanceBtn.addEventListener('click', () => financeModal.classList.remove('hidden'));
         closeFinanceModalBtn.addEventListener('click', () => financeModal.classList.add('hidden'));
 
+        openAboutBtn.addEventListener('click', () => aboutModal.classList.remove('hidden'));
+        closeAboutModalBtn.addEventListener('click', () => aboutModal.classList.add('hidden'));
+
         closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
         closeGalleryBtn.addEventListener('click', () => galleryModal.classList.add('hidden'));
 
         openCustomSearchBtn.addEventListener('click', () => customSearchModal.classList.remove('hidden'));
         closeCustomSearchModalBtn.addEventListener('click', () => customSearchModal.classList.add('hidden'));
 
-        // PROCESAR FORMULARIO BÚSQUEDA PERSONALIZADA (ENVÍA AL NUEVO NÚMERO 096215776)
+        // PROCESAR BÚSQUEDA PERSONALIZADA
         customSearchForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('custom-name').value;
