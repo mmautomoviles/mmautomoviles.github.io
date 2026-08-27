@@ -445,16 +445,48 @@
     <!-- FIREBASE SDK & LÓGICA DE APLICACIÓN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // LISTA BASE DE LOS 27 AUTOS (PRECARGA DE RESPALDO)
+        const initialVehicles = [
+            { id: "v1", title: "Volkswagen Gol Trend 1.6", year: 2018, km: 65000, price: 11900, fuel: "Nafta", description: "Excelente estado, mantenimiento al día, aire y dirección.", images: ["https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800"] },
+            { id: "v2", title: "Chevrolet Onix LTZ 1.4", year: 2019, km: 52000, price: 12800, fuel: "Nafta", description: "Único dueño, pantalla MyLink, sensor de estacionamiento.", images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800"] },
+            { id: "v3", title: "Ford EcoSport SE 1.5", year: 2017, km: 78000, price: 14500, fuel: "Nafta", description: "SUV en impecable condición, cubiertas nuevas.", images: ["https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800"] },
+            { id: "v4", title: "Renault Kwid Outsider 1.0", year: 2021, km: 34000, price: 10200, fuel: "Nafta", description: "Súper económico, ficha oficial en service.", images: ["https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"] },
+            { id: "v5", title: "Fiat Argo Drive 1.3", year: 2020, km: 41000, price: 13400, fuel: "Nafta", description: "Full pack eléctrico, mandos al volante, consumo optimizado.", images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800"] },
+            { id: "v6", title: "Peugeot 208 Active 1.2", year: 2021, km: 29000, price: 15900, fuel: "Nafta", description: "Diseño moderno, i-Cockpit, auxilio sin rodar.", images: ["https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800"] },
+            { id: "v7", title: "Toyota Corolla GLI 1.8 CVT", year: 2018, km: 82000, price: 18500, fuel: "Nafta", description: "Caja automática, andar inmejorable, confiabilidad total.", images: ["https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800"] },
+            { id: "v8", title: "Honda Civic EXL 2.0", year: 2017, km: 91000, price: 21000, fuel: "Nafta", description: "Tapizados en cuero, techo solar, climatizador bizona.", images: ["https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800"] },
+            { id: "v9", title: "Hyundai HB20 Comfort 1.0", year: 2022, km: 18000, price: 14200, fuel: "Nafta", description: "Prácticamente nuevo, garantía de fábrica vigente.", images: ["https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800"] },
+            { id: "v10", title: "Nissan Kicks Advance 1.6", year: 2019, km: 61000, price: 18900, fuel: "Nafta", description: "Cámara de reversa, botón de arranque, llantas de aleación.", images: ["https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800"] },
+            { id: "v11", title: "Suzuki Swift GLX 1.2", year: 2020, km: 38000, price: 13900, fuel: "Nafta", description: "Origen Japón, consumo mínimo, frenos ABS + EBD.", images: ["https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=800"] },
+            { id: "v12", title: "Volkswagen Polo MSI 1.6", year: 2020, km: 45000, price: 14800, fuel: "Nafta", description: "Espacioso, excelente andar en ruta, control de estabilidad.", images: ["https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800"] },
+            { id: "v13", title: "Chevrolet Tracker LTZ 1.2 Turbo", year: 2022, km: 24000, price: 22500, fuel: "Nafta", description: "Motor turbo eficiente, WiFi nativo, cargador inductivo.", images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800"] },
+            { id: "v14", title: "Jeep Renegade Sport 1.8", year: 2019, km: 68000, price: 19800, fuel: "Nafta", description: "Estilo robusto, freno de mano electrónico, velocidad crucero.", images: ["https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800"] },
+            { id: "v15", title: "Ford Ranger XLT 3.2 4x4", year: 2018, km: 11000, price: 29500, fuel: "Diésel", description: "Caja automática, potente motor diésel, enganche e iluminación LED.", images: ["https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800"] },
+            { id: "v16", title: "Toyota Hilux SRV 2.8 4x4", year: 2019, km: 98000, price: 34900, fuel: "Diésel", description: "Referente del segmento, lista para trabajar o viajar.", images: ["https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800"] },
+            { id: "v17", title: "BYD Dolphin EV 100%", year: 2023, km: 12000, price: 26900, fuel: "Eléctrico", description: "Autonomía de 400km, ultra moderno, costos de mantenimiento mínimos.", images: ["https://images.unsplash.com/photo-1563720223185-11003d516935?w=800"] },
+            { id: "v18", title: "Toyota Prius Hybrid 1.8", year: 2017, km: 88000, price: 17900, fuel: "Híbrido", description: "Consumo ultra bajo en ciudad, batería comprobada en concesionario.", images: ["https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800"] },
+            { id: "v19", title: "BMW 320i Sport 2.0 Turbo", year: 2016, km: 85000, price: 27500, fuel: "Nafta", description: "Caja de 8va, tracción trasera, levas al volante, impecable.", images: ["https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800"] },
+            { id: "v20", title: "Mercedes-Benz C200 Avantgarde", year: 2017, km: 74000, price: 31000, fuel: "Nafta", description: "Elegancia y confort superior, faros LED High Performance.", images: ["https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800"] },
+            { id: "v21", title: "Audi A3 Sportback 1.4 TFSI", year: 2018, km: 69000, price: 24800, fuel: "Nafta", description: "Caja S-Tronic, techo panorámico, levas en volante.", images: ["https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800"] },
+            { id: "v22", title: "Citroën C3 Feel 1.6", year: 2021, km: 31000, price: 13200, fuel: "Nafta", description: "Luces LED diurnas, pantalla táctil con Android Auto/CarPlay.", images: ["https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"] },
+            { id: "v23", title: "Kia Rio EX 1.4", year: 2019, km: 58000, price: 14200, fuel: "Nafta", description: "Diseño deportivo, comandos de audio al volante, airbags múltiples.", images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800"] },
+            { id: "v24", title: "Volkswagen Amarok Highline 2.0 TDI", year: 2017, km: 125000, price: 26800, fuel: "Diésel", description: "Caja de 8va, tapizados en cuero, tracción 4Motion.", images: ["https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800"] },
+            { id: "v25", title: "Mitsubishi L200 Triton 3.2 4x4", year: 2016, km: 138000, price: 22900, fuel: "Diésel", description: "Mecánica híper confiable, ideal para campo y ruta.", images: ["https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800"] },
+            { id: "v26", title: "Volvo XC60 T5 Momentum", year: 2018, km: 72000, price: 38900, fuel: "Nafta", description: "Máxima seguridad del segmento, tracción integral AWD.", images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800"] },
+            { id: "v27", title: "Nissan Frontier LE 2.3 Bi-Turbo", year: 2020, km: 79000, price: 32500, fuel: "Diésel", description: "Suspensión trasera multilink, caja de 7ma, asientos de cuero.", images: ["https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800"] }
+        ];
 
         // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForTemplatePurposesOnly",
+            apiKey: "AIzaSyB8MSux4yj49g_qcg1fqARg1vh5tZzMuU4",
             authDomain: "mm-automoviles.firebaseapp.com",
             projectId: "mm-automoviles",
-            storageBucket: "mm-automoviles.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef123456"
+            storageBucket: "mm-automoviles.firebasestorage.app",
+            messagingSenderId: "462241158804",
+            appId: "1:462241158804:web:8da9b00c1bcc089a3f0681",
+            measurementId: "G-LQHCP4BLXZ"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -484,18 +516,21 @@
             filtersContainer.classList.toggle('hidden');
             filterChevron.classList.toggle('rotate-180');
         });
-// ESCUCHAR EN TIEMPO REAL DESDE FIRESTORE
+
+        // ESCUCHAR EN TIEMPO REAL DESDE FIRESTORE CON RESPALDO LOCAL
         onSnapshot(collection(db, "vehicles"), (snapshot) => {
-            allVehicles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (!snapshot.empty) {
+                allVehicles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            } else {
+                allVehicles = initialVehicles;
+            }
             updateBrandOptions();
             applyFiltersAndRender();
         }, (error) => {
-            console.error("Error al cargar publicaciones:", error);
-            catalogContainer.innerHTML = `
-                <div class="col-span-full text-center py-12 text-red-500 text-sm">
-                    Error al conectar con la base de datos.
-                </div>
-            `;
+            console.warn("Conexión remota diferida. Cargando catálogo local...", error);
+            allVehicles = initialVehicles;
+            updateBrandOptions();
+            applyFiltersAndRender();
         });
 
         // ACTUALIZAR MARCAS EN EL FILTRO
@@ -699,7 +734,7 @@
         // SUBIDA DE ARCHIVOS A CLOUDINARY
         async function uploadImagesToCloudinary(files) {
             const uploadPreset = "ml_default";
-            const cloudName = "demo"; // Modificar por tu Cloud Name personal en producción
+            const cloudName = "demo";
             const urls = [];
 
             for (let file of files) {
