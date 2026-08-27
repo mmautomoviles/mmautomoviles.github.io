@@ -442,5 +442,473 @@
         </div>
     </div>
 
+    <!-- FIREBASE SDK & LÓGICA DE APLICACIÓN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIGURACIÓN DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyForTemplatePurposesOnly",
+            authDomain: "mm-automoviles.firebaseapp.com",
+            projectId: "mm-automoviles",
+            storageBucket: "mm-automoviles.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ESTADO GLOBAL Y VARIABLES
+        let allVehicles = [];
+        let isAdminLoggedIn = false;
+        let selectedFiles = [];
+        let selectedCoverIndex = 0;
+        let editFiles = [];
+        let editExistingUrls = [];
+        let editCoverIndex = 0;
+
+        // ELEMENTOS DOM
+        const catalogContainer = document.getElementById('catalog');
+        const vehicleCountEl = document.getElementById('vehicle-count');
+        const filterFuel = document.getElementById('filter-fuel');
+        const filterBrand = document.getElementById('filter-brand');
+        const filterSort = document.getElementById('filter-sort');
+        const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
+        const filtersContainer = document.getElementById('filters-container');
+        const filterChevron = document.getElementById('filter-chevron');
+
+        // DESPLEGABLE FILTROS
+        toggleFiltersBtn.addEventListener('click', () => {
+            filtersContainer.classList.toggle('hidden');
+            filterChevron.classList.toggle('rotate-180');
+        });
+
+        // ESCUCHAR EN TIEMPO REAL DESDE FIRESTORE
+        const q = query(collection(db, "vehicles"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            allVehicles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateBrandOptions();
+            applyFiltersAndRender();
+        }, (error) => {
+            console.error("Error al cargar publicaciones:", error);
+            catalogContainer.innerHTML = `
+                <div class="col-span-full text-center py-12 text-red-500 text-sm">
+                    Error al conectar con la base de datos.
+                </div>
+            `;
+        });
+
+        // ACTUALIZAR MARCAS EN EL FILTRO
+        function updateBrandOptions() {
+            const currentSelected = filterBrand.value;
+            const brands = [...new Set(allVehicles.map(v => {
+                const firstWord = v.title.trim().split(' ')[0];
+                return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+            }))].sort();
+
+            filterBrand.innerHTML = '<option value="all">Todas las marcas</option>';
+            brands.forEach(brand => {
+                const opt = document.createElement('option');
+                opt.value = brand.toLowerCase();
+                opt.textContent = brand;
+                filterBrand.appendChild(opt);
+            });
+            filterBrand.value = currentSelected;
+        }
+
+        // RENDERIZAR Y FILTRAR
+        window.applyFiltersAndRender = function() {
+            let filtered = [...allVehicles];
+
+            const fuelVal = filterFuel.value;
+            if (fuelVal === 'combustion') {
+                filtered = filtered.filter(v => v.fuel === 'Nafta' || v.fuel === 'Diésel');
+            } else if (fuelVal !== 'all') {
+                filtered = filtered.filter(v => v.fuel === fuelVal);
+            }
+
+            const brandVal = filterBrand.value.toLowerCase();
+            if (brandVal !== 'all') {
+                filtered = filtered.filter(v => v.title.toLowerCase().startsWith(brandVal));
+            }
+
+            const sortVal = filterSort.value;
+            if (sortVal === 'price-asc') {
+                filtered.sort((a, b) => Number(a.price) - Number(b.price));
+            } else if (sortVal === 'price-desc') {
+                filtered.sort((a, b) => Number(b.price) - Number(a.price));
+            }
+
+            renderCatalog(filtered);
+        };
+
+        filterFuel.addEventListener('change', applyFiltersAndRender);
+        filterBrand.addEventListener('change', applyFiltersAndRender);
+        filterSort.addEventListener('change', applyFiltersAndRender);
+
+        window.resetFilters = function() {
+            filterFuel.value = 'all';
+            filterBrand.value = 'all';
+            filterSort.value = 'default';
+            applyFiltersAndRender();
+        };
+        document.getElementById('reset-filters-btn').addEventListener('click', resetFilters);
+
+        // IMPRIMIR VEHÍCULOS
+        function renderCatalog(vehicles) {
+            vehicleCountEl.textContent = `${vehicles.length} ${vehicles.length === 1 ? 'Disponible' : 'Disponibles'}`;
+
+            if (vehicles.length === 0) {
+                catalogContainer.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-zinc-950 border border-zinc-800 rounded-2xl p-8">
+                        <i class="fa-solid fa-car-side text-4xl text-zinc-700 mb-3"></i>
+                        <p class="text-gray-400 font-medium text-sm">No se encontraron vehículos que coincidan con la búsqueda.</p>
+                        <button onclick="resetFilters()" class="mt-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-bold px-4 py-2 rounded-lg text-white transition">
+                            Limpiar filtros
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            catalogContainer.innerHTML = vehicles.map(v => {
+                const images = v.images && v.images.length > 0 ? v.images : ['https://via.placeholder.com/600x400?text=Sin+Imagen'];
+                const coverImage = images[v.coverIndex || 0] || images[0];
+
+                return `
+                    <div class="bg-zinc-950 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col justify-between group">
+                        <div class="relative cursor-pointer overflow-hidden" onclick="openGallery('${v.id}')">
+                            <img src="${coverImage}" alt="${v.title}" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                            <span class="absolute top-3 left-3 bg-red-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm">
+                                ${v.fuel}
+                            </span>
+                            ${images.length > 1 ? `
+                                <span class="absolute bottom-3 right-3 bg-black/60 text-gray-300 text-[10px] font-semibold px-2 py-0.5 rounded-md backdrop-blur-sm flex items-center gap-1">
+                                    <i class="fa-solid fa-camera"></i> ${images.length}
+                                </span>
+                            ` : ''}
+                        </div>
+
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-base font-bold text-white font-brand line-clamp-1 group-hover:text-red-500 transition">${v.title}</h3>
+                                <div class="flex items-center space-x-3 text-xs text-gray-400 mt-2 font-medium">
+                                    <span><i class="fa-solid fa-calendar text-red-500 mr-1"></i>${v.year}</span>
+                                    <span>•</span>
+                                    <span><i class="fa-solid fa-gauge text-red-500 mr-1"></i>${Number(v.km).toLocaleString()} km</span>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-3 line-clamp-2 leading-relaxed">${v.description}</p>
+                            </div>
+
+                            <div class="mt-5 pt-4 border-t border-zinc-800/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-wider text-gray-500 block font-semibold">Precio USD</span>
+                                    <span class="text-xl font-black text-white font-brand">${Number(v.price).toLocaleString()}</span>
+                                </div>
+
+                                <div class="flex items-center space-x-2">
+                                    ${isAdminLoggedIn ? `
+                                        <button onclick="openEditModal('${v.id}')" title="Editar" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-yellow-500 p-2 rounded-lg text-xs transition">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                        <button onclick="deleteVehicle('${v.id}')" title="Eliminar" class="bg-zinc-900 hover:bg-red-950/40 border border-red-900/50 text-red-500 p-2 rounded-lg text-xs transition">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    ` : ''}
+                                    <a href="https://wa.me/59899321154?text=${encodeURIComponent(`Hola MM Automóviles, me interesa la siguiente unidad: ${v.title} (USD ${v.price})`)}" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg text-xs transition flex items-center space-x-1 shadow-md shadow-red-950/40">
+                                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                                        <span>Consultar</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // GALERÍA Y DETALLES
+        window.openGallery = function(id) {
+            const vehicle = allVehicles.find(v => v.id === id);
+            if (!vehicle) return;
+
+            const images = vehicle.images && vehicle.images.length > 0 ? vehicle.images : ['https://via.placeholder.com/600x400?text=Sin+Imagen'];
+            const galleryModal = document.getElementById('gallery-modal');
+            const mainImg = document.getElementById('gallery-main-img');
+            const thumbsContainer = document.getElementById('gallery-thumbnails');
+
+            document.getElementById('gallery-title').textContent = vehicle.title;
+            document.getElementById('gallery-price').textContent = `USD ${Number(vehicle.price).toLocaleString()}`;
+            document.getElementById('gallery-description').textContent = vehicle.description;
+
+            document.getElementById('gallery-details').innerHTML = `
+                <span class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-gray-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-calendar text-red-500"></i>
+                    <span>Año ${vehicle.year}</span>
+                </span>
+                <span class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-gray-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-gauge text-red-500"></i>
+                    <span>${Number(vehicle.km).toLocaleString()} km</span>
+                </span>
+                <span class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-gray-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-gas-pump text-red-500"></i>
+                    <span>${vehicle.fuel}</span>
+                </span>
+            `;
+
+            mainImg.src = images[vehicle.coverIndex || 0] || images[0];
+
+            thumbsContainer.innerHTML = images.map((img, idx) => `
+                <img src="${img}" onclick="document.getElementById('gallery-main-img').src='${img}'" class="h-16 w-20 object-cover rounded-lg border border-zinc-800 cursor-pointer hover:border-red-600 transition shrink-0">
+            `).join('');
+
+            galleryModal.classList.remove('hidden');
+        };
+
+        document.getElementById('close-gallery-btn').addEventListener('click', () => {
+            document.getElementById('gallery-modal').classList.add('hidden');
+        });
+
+        // AUTENTICACIÓN ADMIN Y GESTIÓN
+        const adminModal = document.getElementById('admin-modal');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const authStep = document.getElementById('auth-step');
+        const formStep = document.getElementById('form-step');
+        const authForm = document.getElementById('auth-form');
+        const authError = document.getElementById('auth-error');
+
+        openModalBtn.addEventListener('click', () => adminModal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => adminModal.classList.add('hidden'));
+
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === 'MM2026admin') {
+                isAdminLoggedIn = true;
+                authStep.classList.add('hidden');
+                formStep.classList.remove('hidden');
+                authError.classList.add('hidden');
+                applyFiltersAndRender();
+            } else {
+                authError.classList.remove('hidden');
+            }
+        });
+
+        // SUBIDA DE ARCHIVOS A CLOUDINARY
+        async function uploadImagesToCloudinary(files) {
+            const uploadPreset = "ml_default";
+            const cloudName = "demo"; // Modificar por tu Cloud Name personal en producción
+            const urls = [];
+
+            for (let file of files) {
+                if (typeof file === 'string') {
+                    urls.push(file);
+                    continue;
+                }
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', uploadPreset);
+
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.secure_url) urls.push(data.secure_url);
+                } catch (err) {
+                    console.error("Error al subir imagen:", err);
+                }
+            }
+            return urls;
+        }
+
+        // PUBLICACIÓN NUEVA
+        const vehicleForm = document.getElementById('vehicle-form');
+        const imageFilesInput = document.getElementById('image-files');
+        const previewContainer = document.getElementById('preview-container');
+
+        imageFilesInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            selectedCoverIndex = 0;
+            renderPreviews();
+        });
+
+        function renderPreviews() {
+            previewContainer.innerHTML = selectedFiles.map((file, idx) => `
+                <div class="relative border border-zinc-800 rounded-lg overflow-hidden h-20 bg-black group">
+                    <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
+                    <button type="button" onclick="setCover(${idx})" class="absolute top-1 left-1 text-xs ${selectedCoverIndex === idx ? 'text-yellow-400' : 'text-gray-400'} bg-black/60 p-1 rounded">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.setCover = function(idx) {
+            selectedCoverIndex = idx;
+            renderPreviews();
+        };
+
+        vehicleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Guardando...';
+
+            try {
+                const imageUrls = await uploadImagesToCloudinary(selectedFiles);
+                await addDoc(collection(db, "vehicles"), {
+                    title: document.getElementById('title').value,
+                    year: Number(document.getElementById('year').value),
+                    km: Number(document.getElementById('km').value),
+                    price: Number(document.getElementById('price').value),
+                    fuel: document.getElementById('fuel').value,
+                    description: document.getElementById('description').value,
+                    images: imageUrls,
+                    coverIndex: selectedCoverIndex,
+                    createdAt: new Date()
+                });
+
+                vehicleForm.reset();
+                selectedFiles = [];
+                previewContainer.innerHTML = '';
+                adminModal.classList.add('hidden');
+                alert('¡Vehículo publicado correctamente!');
+            } catch (err) {
+                console.error("Error al publicar:", err);
+                alert("Ocurrió un error al guardar el vehículo.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Vehículo';
+            }
+        });
+
+        // EDICIÓN DE VEHÍCULOS
+        const editModal = document.getElementById('edit-modal');
+        const editForm = document.getElementById('edit-vehicle-form');
+        const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
+
+        closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
+
+        window.openEditModal = function(id) {
+            const v = allVehicles.find(item => item.id === id);
+            if (!v) return;
+
+            document.getElementById('edit-id').value = v.id;
+            document.getElementById('edit-title').value = v.title;
+            document.getElementById('edit-year').value = v.year;
+            document.getElementById('edit-km').value = v.km;
+            document.getElementById('edit-price').value = v.price;
+            document.getElementById('edit-fuel').value = v.fuel;
+            document.getElementById('edit-description').value = v.description;
+
+            editExistingUrls = v.images || [];
+            editFiles = [];
+            editCoverIndex = v.coverIndex || 0;
+
+            renderEditPreviews();
+            editModal.classList.remove('hidden');
+        };
+
+        function renderEditPreviews() {
+            const container = document.getElementById('edit-preview-container');
+            const allItems = [...editExistingUrls, ...editFiles];
+
+            container.innerHTML = allItems.map((item, idx) => {
+                const src = typeof item === 'string' ? item : URL.createObjectURL(item);
+                return `
+                    <div class="relative border border-zinc-800 rounded-lg overflow-hidden h-20 bg-black">
+                        <img src="${src}" class="w-full h-full object-cover">
+                        <button type="button" onclick="setEditCover(${idx})" class="absolute top-1 left-1 text-xs ${editCoverIndex === idx ? 'text-yellow-400' : 'text-gray-400'} bg-black/60 p-1 rounded">
+                            <i class="fa-solid fa-star"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.setEditCover = function(idx) {
+            editCoverIndex = idx;
+            renderEditPreviews();
+        };
+
+        document.getElementById('edit-image-files').addEventListener('change', (e) => {
+            editFiles = Array.from(e.target.files);
+            renderEditPreviews();
+        });
+
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const submitBtn = document.getElementById('edit-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Actualizando...';
+
+            try {
+                const newUploaded = await uploadImagesToCloudinary(editFiles);
+                const finalImages = [...editExistingUrls, ...newUploaded];
+
+                await updateDoc(doc(db, "vehicles", id), {
+                    title: document.getElementById('edit-title').value,
+                    year: Number(document.getElementById('edit-year').value),
+                    km: Number(document.getElementById('edit-km').value),
+                    price: Number(document.getElementById('edit-price').value),
+                    fuel: document.getElementById('edit-fuel').value,
+                    description: document.getElementById('edit-description').value,
+                    images: finalImages,
+                    coverIndex: editCoverIndex
+                });
+
+                editModal.classList.add('hidden');
+                alert('Vehículo actualizado.');
+            } catch (err) {
+                console.error("Error al actualizar:", err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Guardar Cambios';
+            }
+        });
+
+        // ELIMINACIÓN DE VEHÍCULOS
+        window.deleteVehicle = async function(id) {
+            if (confirm('¿Estás seguro de que querés eliminar esta publicación?')) {
+                try {
+                    await deleteDoc(doc(db, "vehicles", id));
+                } catch (err) {
+                    console.error("Error al eliminar:", err);
+                }
+            }
+        };
+
+        // EVENTOS DE OTROS MODALES
+        const setupModalToggle = (btnId, modalId, closeId) => {
+            const btn = document.getElementById(btnId);
+            const modal = document.getElementById(modalId);
+            const closeBtn = document.getElementById(closeId);
+
+            if (btn && modal) btn.addEventListener('click', () => modal.classList.remove('hidden'));
+            if (closeBtn && modal) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        };
+
+        setupModalToggle('open-about-btn', 'about-modal', 'close-about-modal-btn');
+        setupModalToggle('open-finance-btn', 'finance-modal', 'close-finance-modal-btn');
+        setupModalToggle('open-custom-search-btn', 'custom-search-modal', 'close-custom-search-modal-btn');
+
+        // FORMULARIO BÚSQUEDA PERSONALIZADA
+        document.getElementById('custom-search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('custom-name').value;
+            const car = document.getElementById('custom-car').value;
+            const budget = document.getElementById('custom-budget').value;
+
+            const text = `Hola MM Automóviles, mi nombre es ${name}. Estoy buscando: ${car} con un presupuesto aprox. de USD ${budget}.`;
+            window.open(`https://wa.me/59899321154?text=${encodeURIComponent(text)}`, '_blank');
+        });
+    </script>
 </body>
 </html>
