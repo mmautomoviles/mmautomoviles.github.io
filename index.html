@@ -449,13 +449,12 @@
 
         // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
-            apiKey: "AIzaSyB8MSux4yj49g_qcg1fqARg1vh5tZzMuU4",
+            apiKey: "AIzaSyDummyKeyForTemplatePurposesOnly",
             authDomain: "mm-automoviles.firebaseapp.com",
             projectId: "mm-automoviles",
-            storageBucket: "mm-automoviles.firebasestorage.app",
-            messagingSenderId: "462241158804",
-            appId: "1:462241158804:web:8da9b00c1bcc089a3f0681",
-            measurementId: "G-LQHCP4BLXZ"
+            storageBucket: "mm-automoviles.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -485,10 +484,8 @@
             filtersContainer.classList.toggle('hidden');
             filterChevron.classList.toggle('rotate-180');
         });
-
-        // ESCUCHAR EN TIEMPO REAL DESDE FIRESTORE
-        const q = query(collection(db, "vehicles"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
+// ESCUCHAR EN TIEMPO REAL DESDE FIRESTORE
+        onSnapshot(collection(db, "vehicles"), (snapshot) => {
             allVehicles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             updateBrandOptions();
             applyFiltersAndRender();
