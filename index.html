@@ -475,7 +475,7 @@
     measurementId: "G-LQHCP4BLXZ"
   };
 
-  const ADMIN_PASSWORD = "MM2026";
+  const ADMIN_PASSWORD = "1234";
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -488,8 +488,14 @@
   let filteredVehicles = [];
   let existingEditImages = [];
   let selectedFilesBase64 = [];
+  let coverIndex = 0; // Índice de la foto seleccionada como portada
+  let isAdminLoggedIn = false; // Estado de la sesión admin
 
   const $ = (id) => document.getElementById(id);
+
+  // Ocultar sección de inventario dentro del modal admin (Se quita de la pestaña)
+  const adminListContainer = $("admin-list")?.closest(".border-t");
+  if (adminListContainer) adminListContainer.remove();
 
   // =====================================================
   // SUBSCRIPCIÓN EN TIEMPO REAL FIRESTORE
@@ -513,7 +519,6 @@
         });
       });
 
-      // Ordenar por fecha de publicación (más reciente primero)
       vehicles.sort((a, b) => {
         const dateA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
         const dateB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
@@ -528,30 +533,16 @@
         counter.textContent = `${vehicles.length} ${vehicles.length === 1 ? "unidad disponible" : "unidades disponibles"}`;
       }
 
-      const adminCounter = $("admin-count");
-      if (adminCounter) adminCounter.textContent = vehicles.length;
-
       applyFilters();
       loadBrands();
-      renderAdminList();
     },
     (error) => {
       console.error("Firebase Snapshot Error:", error);
-      const loading = $("loading");
-      if (loading) {
-        loading.innerHTML = `
-          <div class="text-red-500 py-6">
-            <i class="fa-solid fa-triangle-exclamation text-4xl mb-2"></i>
-            <p class="font-bold">Error al conectar con la base de datos.</p>
-            <p class="text-xs text-zinc-500 mt-1">${error.message}</p>
-          </div>
-        `;
-      }
     }
   );
 
   // =====================================================
-  // RENDERIZADO DEL CATÁLOGO DE VEHÍCULOS
+  // RENDERIZADO DEL CATÁLOGOS CON BOTONES ADMIN DIRECTOS
   // =====================================================
   function renderVehicles() {
     const catalog = $("catalog");
@@ -576,13 +567,26 @@
         : "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80";
 
       return `
-        <article class="vehicle-card bg-zinc-950 border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-red-600/50 flex flex-col">
+        <article class="vehicle-card bg-zinc-950 border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-red-600/50 flex flex-col relative group">
+          
+          <!-- BOTONES FLOTANTES DE EDICIÓN / ELIMINACIÓN (SOLO ADMIN) -->
+          ${isAdminLoggedIn ? `
+            <div class="absolute top-3 right-3 z-30 flex gap-2 bg-black/80 backdrop-blur-md p-1.5 rounded-xl border border-zinc-700/60 shadow-lg">
+              <button onclick="editVehicle('${v.id}')" class="bg-zinc-800 hover:bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition" title="Editar vehículo">
+                <i class="fa-solid fa-pencil text-xs"></i>
+              </button>
+              <button onclick="deleteVehicle('${v.id}')" class="bg-red-950 hover:bg-red-600 text-red-200 hover:text-white w-8 h-8 rounded-lg flex items-center justify-center transition" title="Eliminar vehículo">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          ` : ''}
+
           <button onclick="openGallery('${v.id}')" class="block w-full relative aspect-[16/10] bg-zinc-900 overflow-hidden text-left focus:outline-none">
             <img src="${mainImg}" alt="${v.title}" class="img-zoom w-full h-full object-cover" loading="lazy">
             <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg uppercase tracking-wider badge-glow">
               DISPONIBLE
             </span>
-            ${v.images.length > 1 ? `
+            ${v.images.length > 1 && !isAdminLoggedIn ? `
               <span class="absolute top-3 right-3 bg-black/80 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-zinc-700/50">
                 <i class="fa-solid fa-camera mr-1 text-red-500"></i>${v.images.length}
               </span>
@@ -725,28 +729,12 @@
     const maxPrice = Number($("filter-max-price")?.value) || Infinity;
 
     filteredVehicles = vehicles.filter(v => {
-      let fuelOK = true;
-      if (fuel === "combustion") {
-        fuelOK = v.fuel === "Nafta" || v.fuel === "Diésel";
-      } else if (fuel !== "all") {
-        fuelOK = v.fuel === fuel;
-      }
-
-      let brandOK = true;
-      if (brand !== "all") {
-        const vehicleBrand = v.title.trim().split(" ")[0];
-        brandOK = vehicleBrand.toLowerCase() === brand.toLowerCase();
-      }
-
-      let priceOK = v.price >= minPrice;
-      if (maxPrice > 0 && maxPrice !== Infinity) {
-        priceOK = priceOK && v.price <= maxPrice;
-      }
-
+      let fuelOK = fuel === "combustion" ? (v.fuel === "Nafta" || v.fuel === "Diésel") : (fuel === "all" || v.fuel === fuel);
+      let brandOK = brand === "all" || v.title.trim().split(" ")[0].toLowerCase() === brand.toLowerCase();
+      let priceOK = v.price >= minPrice && (maxPrice === 0 || maxPrice === Infinity || v.price <= maxPrice);
       return fuelOK && brandOK && priceOK;
     });
 
-    // Ordenamiento de arreglos
     if (sort === "price-asc") filteredVehicles.sort((a, b) => a.price - b.price);
     if (sort === "price-desc") filteredVehicles.sort((a, b) => b.price - a.price);
     if (sort === "year-desc") filteredVehicles.sort((a, b) => b.year - a.year);
@@ -800,7 +788,7 @@
   $("reset-filters")?.addEventListener("click", resetFilters);
 
   // =====================================================
-  // MODALES & PANEL DE ADMINISTRACIÓN
+  // MODALES Y PANEL ADMINISTRATIVO
   // =====================================================
   const modalTriggers = {
     'about-btn': 'about-modal',
@@ -833,22 +821,34 @@
     e.preventDefault();
     const pass = $('admin-pass').value;
     if (pass === ADMIN_PASSWORD) {
+      isAdminLoggedIn = true;
       $('login-step').classList.add('hidden');
       $('admin-step').classList.remove('hidden');
       $('login-error').classList.add('hidden');
-      renderAdminList();
+      
+      // Cambiar icono cabecera admin a activo
+      const adminBtn = $('admin-btn');
+      if (adminBtn) adminBtn.className = "bg-red-600 text-white border border-red-500 font-bold px-3 py-2 rounded-xl text-xs transition";
+
+      renderVehicles(); // Volver a renderizar para desplegar los iconos de lápiz/papelera
     } else {
       $('login-error').classList.remove('hidden');
     }
   });
 
   $('logout-btn')?.addEventListener('click', () => {
+    isAdminLoggedIn = false;
     $('admin-pass').value = '';
     $('admin-step').classList.add('hidden');
     $('login-step').classList.remove('hidden');
+    
+    const adminBtn = $('admin-btn');
+    if (adminBtn) adminBtn.className = "bg-zinc-900 hover:bg-red-600/20 text-red-500 border border-red-600/40 font-bold px-3 py-2 rounded-xl text-xs transition";
+
+    renderVehicles(); // Ocultar lápiz y papelera
   });
 
-  // PREVISUALIZACIÓN Y CONVERSIÓN DE IMÁGENES A BASE64
+  // PREVISUALIZACIÓN DE FOTOS CON SELECCIÓN DE PORTADA (ESTRELLA)
   $('image-files')?.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
     selectedFilesBase64 = [];
@@ -858,6 +858,7 @@
       selectedFilesBase64.push(base64);
     }
 
+    coverIndex = 0; // Por defecto la primera es portada
     renderPreviewContainer();
   });
 
@@ -866,36 +867,51 @@
     if (!container) return;
     container.innerHTML = '';
 
-    // Renderizar imágenes existentes (caso edición)
-    existingEditImages.forEach((img, idx) => {
-      const div = document.createElement('div');
-      div.className = 'relative aspect-video rounded-lg overflow-hidden border border-zinc-700 bg-black group';
-      div.innerHTML = `
-        <img src="${img}" class="w-full h-full object-cover">
-        <button type="button" onclick="removeExistingImage(${idx})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center opacity-80 hover:opacity-100">&times;</button>
-      `;
-      container.appendChild(div);
-    });
+    const allImages = [...existingEditImages, ...selectedFilesBase64];
 
-    // Renderizar nuevas imágenes cargadas
-    selectedFilesBase64.forEach((img, idx) => {
+    if (!allImages.length) return;
+
+    allImages.forEach((img, idx) => {
+      const isCover = idx === coverIndex;
       const div = document.createElement('div');
-      div.className = 'relative aspect-video rounded-lg overflow-hidden border border-red-600/50 bg-black group';
+      div.className = `relative aspect-video rounded-xl overflow-hidden border-2 transition bg-black group ${isCover ? 'border-amber-400 ring-2 ring-amber-400/40' : 'border-zinc-800'}`;
+      
       div.innerHTML = `
         <img src="${img}" class="w-full h-full object-cover">
-        <button type="button" onclick="removeNewImage(${idx})" class="absolute top-1 right-1 bg-zinc-900 text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center opacity-80 hover:opacity-100">&times;</button>
+        
+        <!-- ESTRELLA PORTADA -->
+        <button type="button" onclick="setAsCover(${idx})" 
+                class="absolute top-1.5 left-1.5 p-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${isCover ? 'bg-amber-500 text-black' : 'bg-black/70 text-zinc-400 hover:text-amber-400'}"
+                title="${isCover ? 'Es la foto de portada' : 'Marcar como portada'}">
+          <i class="fa-solid fa-star"></i>
+          ${isCover ? '<span class="text-[9px] uppercase font-extrabold">Portada</span>' : ''}
+        </button>
+
+        <!-- ELIMINAR FOTO -->
+        <button type="button" onclick="removePreviewImage(${idx})" 
+                class="absolute top-1.5 right-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg w-6 h-6 text-xs flex items-center justify-center transition">
+          &times;
+        </button>
       `;
       container.appendChild(div);
     });
   }
 
-  window.removeExistingImage = function(index) {
-    existingEditImages.splice(index, 1);
+  window.setAsCover = function(index) {
+    coverIndex = index;
     renderPreviewContainer();
   };
 
-  window.removeNewImage = function(index) {
-    selectedFilesBase64.splice(index, 1);
+  window.removePreviewImage = function(index) {
+    if (index < existingEditImages.length) {
+      existingEditImages.splice(index, 1);
+    } else {
+      selectedFilesBase64.splice(index - existingEditImages.length, 1);
+    }
+    
+    if (coverIndex >= (existingEditImages.length + selectedFilesBase64.length)) {
+      coverIndex = 0;
+    }
     renderPreviewContainer();
   };
 
@@ -926,6 +942,12 @@
 
     let finalImages = [...existingEditImages, ...selectedFilesBase64];
 
+    // Reordenar array para colocar la foto portada elegida con la estrella al principio [0]
+    if (finalImages.length > 0 && coverIndex < finalImages.length) {
+      const coverImage = finalImages.splice(coverIndex, 1)[0];
+      finalImages.unshift(coverImage);
+    }
+
     try {
       if (editId) {
         const vehicleDoc = doc(db, "vehicles", editId);
@@ -954,6 +976,7 @@
       }
 
       resetAdminForm();
+      $('admin-modal').classList.remove('open');
     } catch (err) {
       console.error('Error guardando en Firestore:', err);
       status.textContent = 'Error al guardar datos: ' + err.message;
@@ -963,34 +986,7 @@
     }
   });
 
-  // GESTIÓN DEL INVENTARIO DENTRO DEL ADMIN
-  function renderAdminList() {
-    const list = $('admin-list');
-    if (!list) return;
-
-    if (!vehicles.length) {
-      list.innerHTML = `<p class="text-xs text-zinc-500 py-2">No hay unidades cargadas en el sistema.</p>`;
-      return;
-    }
-
-    list.innerHTML = vehicles.map(v => `
-      <div class="flex items-center justify-between p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs">
-        <div class="truncate mr-3">
-          <p class="font-bold text-white truncate">${v.title}</p>
-          <p class="text-zinc-500 text-[10px] mt-0.5">$${v.price} USD | ${v.year} | ${formatKm(v.km)}</p>
-        </div>
-        <div class="flex items-center gap-1.5 shrink-0">
-          <button onclick="editVehicle('${v.id}')" class="bg-zinc-800 hover:bg-zinc-700 text-white p-2 rounded-lg transition" title="Editar">
-            <i class="fa-solid fa-pen text-xs"></i>
-          </button>
-          <button onclick="deleteVehicle('${v.id}')" class="bg-red-950/60 text-red-400 hover:bg-red-600 hover:text-white p-2 rounded-lg transition" title="Eliminar">
-            <i class="fa-solid fa-trash text-xs"></i>
-          </button>
-        </div>
-      </div>
-    `).join('');
-  }
-
+  // FUNCIONALIDAD EDITAR / ELIMINAR DIRECTA EN TARJETAS
   window.editVehicle = function(id) {
     const v = vehicles.find(item => item.id === id);
     if (!v) return;
@@ -1005,11 +1001,14 @@
 
     existingEditImages = [...(v.images || [])];
     selectedFilesBase64 = [];
+    coverIndex = 0;
     renderPreviewContainer();
 
     $('submit-btn').textContent = 'Guardar Cambios';
     $('cancel-edit').classList.remove('hidden');
-    $('admin-status').textContent = `Editando registro ID: ${v.id}`;
+    $('admin-status').textContent = `Editando: ${v.title}`;
+    
+    $('admin-modal').classList.add('open');
   };
 
   $('cancel-edit')?.addEventListener('click', resetAdminForm);
@@ -1020,13 +1019,17 @@
     $('preview-container').innerHTML = '';
     existingEditImages = [];
     selectedFilesBase64 = [];
+    coverIndex = 0;
     $('submit-btn').textContent = 'Publicar Vehículo';
     $('cancel-edit').classList.add('hidden');
     $('admin-status').textContent = 'Crear o modificar vehículos del catálogo.';
   }
 
   window.deleteVehicle = async function(id) {
-    if (!confirm('¿Estás seguro de que querés eliminar esta publicación permanentemente?')) return;
+    const v = vehicles.find(item => item.id === id);
+    const title = v ? v.title : "este vehículo";
+    
+    if (!confirm(`¿Estás seguro de que querés eliminar "${title}" permanentemente?`)) return;
     try {
       await deleteDoc(doc(db, "vehicles", id));
     } catch (err) {
@@ -1046,6 +1049,3 @@
   });
 
 </script>
-
-</body>
-</html>
