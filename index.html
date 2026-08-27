@@ -303,59 +303,817 @@
 </div>
 
 <script type="module">
-/* ============================================================
-   MM AUTOMÓVILES - FIREBASE
-   ============================================================
-   IMPORTANTE:
-   1. Pegá acá la configuración EXACTA de tu proyecto Firebase.
-   2. Si tu colección tiene otro nombre, agregala en COLLECTIONS.
-   3. El lector acepta varios nombres de campos para reconocer
-      vehículos que ya estén cargados.
-   ============================================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
 import {
   getFirestore,
   collection,
+  onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
-  onSnapshot,
-  serverTimestamp,
-  query,
-  orderBy
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-/* ============================================================
-   PEGAR CONFIG FIREBASE
-   ============================================================ */
+// =====================================================
+// FIREBASE MM AUTOMÓVILES
+// =====================================================
+
 const firebaseConfig = {
-  apiKey: "PEGAR_API_KEY",
-  authDomain: "PEGAR_AUTH_DOMAIN",
-  projectId: "PEGAR_PROJECT_ID",
-  storageBucket: "PEGAR_STORAGE_BUCKET",
-  messagingSenderId: "PEGAR_MESSAGING_SENDER_ID",
-  appId: "PEGAR_APP_ID"
+  apiKey: "AIzaSyB8MSux4yj49g_qcglfqARg1vh5tZzMuU4",
+  authDomain: "mmautomoviles-e2e94.firebaseapp.com",
+  projectId: "mmautomoviles-e2e94",
+  storageBucket: "mmautomoviles-e2e94.firebasestorage.app",
+  messagingSenderId: "462241158804",
+  appId: "1:462241158804:web:8da9b00c1bcc089a3f0681",
+  measurementId: "G-LQHCP4BLXZ"
 };
 
-/* Cambiá/añadí nombres si tu colección se llama diferente. */
-const COLLECTIONS = [
-  "vehicles",
-  "vehiculos",
-  "autos",
-  "cars",
-  "vehículos"
-];
 
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+
+// Firestore
+const db = getFirestore(app);
+
+
+// =====================================================
+// COLECCIÓN REAL DE TU FIREBASE
+// =====================================================
+
+const vehiclesRef = collection(db, "vehicles");
+
+
+// =====================================================
+// VARIABLES
+// =====================================================
+
+let vehicles = [];
+let filteredVehicles = [];
+
+
+// =====================================================
+// CARGAR VEHÍCULOS DESDE FIREBASE
+// =====================================================
+
+onSnapshot(
+  vehiclesRef,
+
+  (snapshot) => {
+
+    console.log("Firebase conectado correctamente");
+
+    console.log("Cantidad de vehículos:", snapshot.size);
+
+    vehicles = [];
+
+    snapshot.forEach((document) => {
+
+      const data = document.data();
+
+      console.log("Vehículo encontrado:", data);
+
+      vehicles.push({
+
+        id: document.id,
+
+        title: data.title || "Vehículo",
+
+        year: Number(data.year) || 0,
+
+        km: Number(data.km) || 0,
+
+        price: Number(data.price) || 0,
+
+        fuel: data.fuel || "Nafta",
+
+        description: data.description || "",
+
+        images: Array.isArray(data.images)
+          ? data.images
+          : [],
+
+        createdAt: data.createdAt || null
+
+      });
+
+    });
+
+
+    // Ordenar por fecha de creación
+    vehicles.sort((a, b) => {
+
+      const dateA = a.createdAt?.toMillis
+        ? a.createdAt.toMillis()
+        : 0;
+
+      const dateB = b.createdAt?.toMillis
+        ? b.createdAt.toMillis()
+        : 0;
+
+      return dateB - dateA;
+
+    });
+
+
+    filteredVehicles = [...vehicles];
+
+
+    // Quitar "Cargando..."
+    const loading = document.getElementById("loading");
+
+    if (loading) {
+      loading.remove();
+    }
+
+
+    // Actualizar contador
+    const counter = document.getElementById("vehicle-count");
+
+    if (counter) {
+
+      counter.textContent =
+        `${vehicles.length} ${
+          vehicles.length === 1
+            ? "unidad"
+            : "unidades"
+        }`;
+
+    }
+
+
+    // Mostrar vehículos
+    renderVehicles();
+
+
+    // Mostrar vehículos en administración
+    if (typeof renderAdminList === "function") {
+      renderAdminList();
+    }
+
+
+    console.log(
+      "Vehículos cargados correctamente:",
+      vehicles
+    );
+
+  },
+
+  (error) => {
+
+    console.error(
+      "ERROR FIREBASE:",
+      error
+    );
+
+
+    const loading = document.getElementById("loading");
+
+    if (loading) {
+      loading.innerHTML = `
+        <div class="text-red-500">
+
+          <i class="fa-solid fa-circle-exclamation text-4xl"></i>
+
+          <p class="mt-3 font-bold">
+            Error conectando con Firebase
+          </p>
+
+          <p class="mt-2 text-xs text-gray-500">
+            ${error.message}
+          </p>
+
+        </div>
+      `;
+    }
+
+  }
+
+);
+
+
+// =====================================================
+// MOSTRAR VEHÍCULOS
+// =====================================================
+
+function renderVehicles() {
+
+  const catalog =
+    document.getElementById("catalog");
+
+  if (!catalog) return;
+
+
+  if (!filteredVehicles.length) {
+
+    catalog.innerHTML = `
+
+      <div class="col-span-full text-center py-16">
+
+        <i class="fa-solid fa-car-side text-5xl text-zinc-700"></i>
+
+        <p class="mt-4 text-gray-400">
+          No hay vehículos disponibles.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  catalog.innerHTML = filteredVehicles.map(vehicle => {
+
+    const image =
+      vehicle.images &&
+      vehicle.images.length > 0
+
+        ? vehicle.images[0]
+
+        : "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80";
+
+
+    return `
+
+      <article
+        class="vehicle-card bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl hover:border-red-600/50 transition"
+      >
+
+        <button
+          onclick="openGallery('${vehicle.id}')"
+          class="block w-full relative aspect-[16/10] bg-zinc-900 overflow-hidden"
+        >
+
+          <img
+            src="${image}"
+            alt="${vehicle.title}"
+            class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
+          >
+
+          <span
+            class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg"
+          >
+            DISPONIBLE
+          </span>
+
+
+          ${
+            vehicle.images.length > 1
+              ? `
+                <span
+                  class="absolute top-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-lg"
+                >
+                  <i class="fa-solid fa-images mr-1"></i>
+                  ${vehicle.images.length}
+                </span>
+              `
+              : ""
+          }
+
+        </button>
+
+
+        <div class="p-5">
+
+          <h3
+            class="text-xl font-bold text-white font-brand"
+          >
+            ${vehicle.title}
+          </h3>
+
+
+          <div class="grid grid-cols-2 gap-2 mt-4 text-xs text-gray-400">
+
+            <span>
+              <i class="fa-regular fa-calendar text-red-500 mr-1"></i>
+              ${vehicle.year || "—"}
+            </span>
+
+            <span>
+              <i class="fa-solid fa-road text-red-500 mr-1"></i>
+              ${formatKm(vehicle.km)}
+            </span>
+
+            <span>
+              <i class="fa-solid fa-gas-pump text-red-500 mr-1"></i>
+              ${vehicle.fuel}
+            </span>
+
+          </div>
+
+
+          <p
+            class="text-gray-400 text-xs mt-4 line-clamp-2 min-h-[32px]"
+          >
+            ${vehicle.description}
+          </p>
+
+
+          <div
+            class="flex justify-between items-end gap-3 mt-5 pt-4 border-t border-zinc-800"
+          >
+
+            <div>
+
+              <span
+                class="block text-[10px] uppercase text-gray-500"
+              >
+                Precio
+              </span>
+
+              <span
+                class="text-xl font-black text-red-500 font-brand"
+              >
+                ${formatPrice(vehicle.price)}
+              </span>
+
+            </div>
+
+
+            <button
+              onclick="openGallery('${vehicle.id}')"
+              class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-xs"
+            >
+              Ver vehículo
+            </button>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    `;
+
+  }).join("");
+
+}
+
+
+// =====================================================
+// FORMATO PRECIO
+// =====================================================
+
+function formatPrice(price) {
+
+  if (!price) {
+    return "Consultar";
+  }
+
+  return "USD " +
+    new Intl.NumberFormat("es-UY").format(price);
+
+}
+
+
+// =====================================================
+// FORMATO KILÓMETROS
+// =====================================================
+
+function formatKm(km) {
+
+  if (!km) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("es-UY").format(km) +
+    " km";
+
+}
+
+
+// =====================================================
+// GALERÍA
+// =====================================================
+
+window.openGallery = function(id) {
+
+  const vehicle =
+    vehicles.find(v => v.id === id);
+
+  if (!vehicle) return;
+
+
+  window.galleryVehicle = vehicle;
+
+  window.galleryIndex = 0;
+
+
+  const modal =
+    document.getElementById("gallery-modal");
+
+  if (!modal) return;
+
+
+  document.getElementById("gallery-title").textContent =
+    vehicle.title;
+
+
+  document.getElementById("gallery-description").textContent =
+    vehicle.description || "Sin descripción.";
+
+
+  document.getElementById("gallery-price").textContent =
+    formatPrice(vehicle.price);
+
+
+  document.getElementById("gallery-details").innerHTML = `
+
+    <span>
+      <i class="fa-regular fa-calendar text-red-500 mr-1"></i>
+      ${vehicle.year || "—"}
+    </span>
+
+    <span>
+      <i class="fa-solid fa-road text-red-500 mr-1"></i>
+      ${formatKm(vehicle.km)}
+    </span>
+
+    <span>
+      <i class="fa-solid fa-gas-pump text-red-500 mr-1"></i>
+      ${vehicle.fuel}
+    </span>
+
+  `;
+
+
+  const whatsappMessage =
+    `Hola MM Automóviles, estoy interesado en el ${vehicle.title} ${vehicle.year}. ¿Me pasan más información?`;
+
+
+  document.getElementById("gallery-whatsapp").href =
+    "https://wa.me/59899321154?text=" +
+    encodeURIComponent(whatsappMessage);
+
+
+  renderGallery();
+
+
+  modal.classList.add("open");
+
+};
+
+
+// =====================================================
+// MOSTRAR GALERÍA
+// =====================================================
+
+function renderGallery() {
+
+  const vehicle =
+    window.galleryVehicle;
+
+  if (!vehicle) return;
+
+
+  const images =
+    vehicle.images || [];
+
+
+  const main =
+    document.getElementById("gallery-main");
+
+
+  if (!images.length) {
+
+    main.src =
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80";
+
+  } else {
+
+    main.src =
+      images[window.galleryIndex];
+
+  }
+
+
+  const thumbs =
+    document.getElementById("gallery-thumbs");
+
+
+  if (!thumbs) return;
+
+
+  thumbs.innerHTML =
+    images.map((image, index) => `
+
+      <button
+        onclick="setGalleryIndex(${index})"
+        class="w-20 h-14 shrink-0 rounded-lg overflow-hidden border ${
+          index === window.galleryIndex
+            ? "border-red-600"
+            : "border-zinc-800"
+        }"
+      >
+
+        <img
+          src="${image}"
+          class="w-full h-full object-cover"
+          alt=""
+        >
+
+      </button>
+
+    `).join("");
+
+}
+
+
+window.setGalleryIndex = function(index) {
+
+  window.galleryIndex = index;
+
+  renderGallery();
+
+};
+
+
+// =====================================================
+// CERRAR GALERÍA
+// =====================================================
+
+const galleryClose =
+  document.getElementById("gallery-close");
+
+if (galleryClose) {
+
+  galleryClose.onclick = () => {
+
+    document
+      .getElementById("gallery-modal")
+      .classList.remove("open");
+
+  };
+
+}
+
+
+// =====================================================
+// FLECHAS GALERÍA
+// =====================================================
+
+document.getElementById("gallery-prev")?.addEventListener(
+  "click",
+  () => {
+
+    const images =
+      window.galleryVehicle?.images || [];
+
+    if (!images.length) return;
+
+    window.galleryIndex--;
+
+    if (window.galleryIndex < 0) {
+      window.galleryIndex =
+        images.length - 1;
+    }
+
+    renderGallery();
+
+  }
+);
+
+
+document.getElementById("gallery-next")?.addEventListener(
+  "click",
+  () => {
+
+    const images =
+      window.galleryVehicle?.images || [];
+
+    if (!images.length) return;
+
+    window.galleryIndex++;
+
+    if (window.galleryIndex >= images.length) {
+      window.galleryIndex = 0;
+    }
+
+    renderGallery();
+
+  }
+);
+
+
+// =====================================================
+// FILTROS
+// =====================================================
+
+function applyFilters() {
+
+  const fuel =
+    document.getElementById("filter-fuel")?.value || "all";
+
+  const brand =
+    document.getElementById("filter-brand")?.value || "all";
+
+  const sort =
+    document.getElementById("filter-sort")?.value || "default";
+
+
+  filteredVehicles =
+    vehicles.filter(vehicle => {
+
+      let fuelOK = true;
+
+      if (fuel === "combustion") {
+
+        fuelOK =
+          vehicle.fuel === "Nafta" ||
+          vehicle.fuel === "Diésel" ||
+          vehicle.fuel === "Diesel";
+
+      } else if (fuel !== "all") {
+
+        fuelOK =
+          vehicle.fuel === fuel;
+
+      }
+
+
+      let brandOK = true;
+
+      if (brand !== "all") {
+
+        const vehicleBrand =
+          vehicle.title
+            .trim()
+            .split(" ")[0];
+
+        brandOK =
+          vehicleBrand.toLowerCase() ===
+          brand.toLowerCase();
+
+      }
+
+
+      return fuelOK && brandOK;
+
+    });
+
+
+  if (sort === "price-asc") {
+
+    filteredVehicles.sort(
+      (a,b) => a.price - b.price
+    );
+
+  }
+
+
+  if (sort === "price-desc") {
+
+    filteredVehicles.sort(
+      (a,b) => b.price - a.price
+    );
+
+  }
+
+
+  if (sort === "year-desc") {
+
+    filteredVehicles.sort(
+      (a,b) => b.year - a.year
+    );
+
+  }
+
+}
+
+
+function refreshCatalog() {
+
+  applyFilters();
+
+  renderVehicles();
+
+}
+
+
+// Eventos de filtros
+
+document
+  .getElementById("filter-fuel")
+  ?.addEventListener("change", refreshCatalog);
+
+
+document
+  .getElementById("filter-brand")
+  ?.addEventListener("change", refreshCatalog);
+
+
+document
+  .getElementById("filter-sort")
+  ?.addEventListener("change", refreshCatalog);
+
+
+// =====================================================
+// CARGAR MARCAS
+// =====================================================
+
+function loadBrands() {
+
+  const select =
+    document.getElementById("filter-brand");
+
+  if (!select) return;
+
+
+  const brands = [
+
+    ...new Set(
+
+      vehicles.map(vehicle =>
+
+        vehicle.title
+          .trim()
+          .split(" ")[0]
+
+      )
+
+    )
+
+  ].sort();
+
+
+  select.innerHTML =
+    `<option value="all">Todas las marcas</option>`;
+
+
+  brands.forEach(brand => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = brand;
+
+    option.textContent = brand;
+
+    select.appendChild(option);
+
+  });
+
+}
+
+
+// Actualizar marcas cuando cambian los vehículos
+const originalRenderVehicles =
+  renderVehicles;
+
+
+// =====================================================
+// RESET FILTROS
+// =====================================================
+
+window.resetFilters = function() {
+
+  const fuel =
+    document.getElementById("filter-fuel");
+
+  const brand =
+    document.getElementById("filter-brand");
+
+  const sort =
+    document.getElementById("filter-sort");
+
+
+  if (fuel) fuel.value = "all";
+
+  if (brand) brand.value = "all";
+
+  if (sort) sort.value = "default";
+
+
+  filteredVehicles =
+    [...vehicles];
+
+
+  renderVehicles();
+
+};
+
+
+// =====================================================
+// ACTUALIZAR MARCAS CADA VEZ QUE LLEGAN VEHÍCULOS
+// =====================================================
+
+setInterval(() => {
+
+  if (vehicles.length > 0) {
+    loadBrands();
+  }
+
+}, 1000);
+
+
+</script>
 /* Contraseña del panel.
    IMPORTANTE: esto NO es seguridad real para producción.
    Para producción conviene Firebase Authentication. */
