@@ -4,10 +4,262 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MM Automóviles</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    /* RESET BÁSICO Y FUENTES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0b0b0b;
+      color: #ffffff;
+      padding: 20px 40px;
+    }
+
+    /* ENCABEZADO Y LOGO */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #1f1f1f;
+    }
+
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .logo-red {
+      color: #e50914;
+    }
+
+    .slogan {
+      font-size: 0.75rem;
+      color: #a1a1aa;
+      font-weight: 400;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* BOTONES GENERALES */
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-red {
+      background-color: #dc2626;
+      color: #fff;
+    }
+
+    .btn-dark {
+      background-color: #1c1c1e;
+      color: #e4e4e7;
+      border: 1px solid #27272a;
+    }
+
+    .btn-icon {
+      background-color: #1c1c1e;
+      color: #dc2626;
+      padding: 8px;
+    }
+
+    /* BARRA DE FILTROS Y BÚSQUEDA */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 25px 0;
+    }
+
+    .btn-filter {
+      background-color: #1c1c1e;
+      color: #fff;
+      border: 1px solid #27272a;
+    }
+
+    .search-box {
+      background-color: #141415;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 6px 6px 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.85rem;
+      color: #a1a1aa;
+    }
+
+    .btn-red-outline {
+      background-color: rgba(220, 38, 38, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* SECCIÓN CATÁLOGO */
+    .catalog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .bar-red {
+      color: #dc2626;
+      font-weight: bold;
+    }
+
+    .badge-disponibles {
+      background-color: rgba(220, 38, 38, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    /* GRILLA DE AUTOS */
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .car-card {
+      background-color: #141415;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .card-image {
+      position: relative;
+      width: 100%;
+      height: 200px;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tag-fuel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #dc2626;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .badge-photos {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .card-content {
+      padding: 16px;
+    }
+
+    .card-content h3 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .car-specs {
+      font-size: 0.8rem;
+      color: #ef4444;
+      margin-bottom: 10px;
+    }
+
+    .car-desc {
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      margin-bottom: 20px;
+      min-height: 38px;
+    }
+
+    /* PIE DE TARJETA Y PRECIO */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #27272a;
+      padding-top: 12px;
+    }
+
+    .price-label {
+      display: block;
+      font-size: 0.65rem;
+      color: #71717a;
+    }
+
+    .price-amount {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .card-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background-color: #27272a;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .btn-delete {
+      background-color: #3f0f12;
+    }
+
+    .btn-consult {
+      background-color: #16a34a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- ENCABEZADO / NAVBAR -->
   <header class="navbar">
     <div class="logo-container">
       <div class="logo">
@@ -24,6 +276,7 @@
     </div>
   </header>
 
+  <!-- BARRA DE FILTROS Y BÚSQUEDA -->
   <section class="toolbar">
     <button class="btn btn-filter">⚙️ Filtrar Vehículos ∨</button>
     
@@ -33,14 +286,17 @@
     </div>
   </section>
 
+  <!-- SECCIÓN PRINCIPAL -->
   <main class="catalog">
     <div class="catalog-header">
       <h2><span class="bar-red">|</span> Vehículos Disponibles</h2>
       <span class="badge-disponibles">27 disponibles</span>
     </div>
 
+    <!-- GRILLA DE AUTOS -->
     <div class="car-grid">
 
+      <!-- Tarjeta 1: Dodge Journey -->
       <article class="car-card">
         <div class="card-image">
           <img src="https://via.placeholder.com/400x250/333/fff?text=Dodge+Journey" alt="Dodge Journey">
@@ -66,6 +322,7 @@
         </div>
       </article>
 
+      <!-- Tarjeta 2: Suzuki Celerio -->
       <article class="car-card">
         <div class="card-image">
           <img src="https://via.placeholder.com/400x250/333/fff?text=Suzuki+Celerio" alt="Suzuki Celerio">
@@ -91,6 +348,7 @@
         </div>
       </article>
 
+      <!-- Tarjeta 3: Ford EcoSport -->
       <article class="car-card">
         <div class="card-image">
           <img src="https://via.placeholder.com/400x250/333/fff?text=Ford+EcoSport" alt="Ford EcoSport">
