@@ -1,915 +1,1068 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MM Automóviles | Catálogo Exclusivo</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Íconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-brand { font-family: 'Montserrat', sans-serif; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MM Automóviles | Catálogo</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Inter, sans-serif; }
+    .font-brand { font-family: Montserrat, sans-serif; }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .scrollbar::-webkit-scrollbar { width:6px; height:6px; }
+    .scrollbar::-webkit-scrollbar-thumb { background:#3f3f46; border-radius:10px; }
+    .modal { display:none; }
+    .modal.open { display:flex; }
+    .card-img { transition:transform .35s ease; }
+    .vehicle-card:hover .card-img { transform:scale(1.04); }
+  </style>
 </head>
-<body class="bg-black text-gray-200 min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
 
-    <!-- NAV BAR -->
-    <header class="bg-zinc-950 border-b border-zinc-800 text-white sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <!-- LOGO TEXTUAL + SUBTÍTULO COMPACTO -->
-            <div class="flex flex-col items-start font-brand cursor-pointer" onclick="resetFilters()">
-                <div class="flex items-center space-x-2">
-                    <div class="text-3xl font-black tracking-tighter">
-                        <span class="text-gray-300">M</span><span class="text-red-600">M</span>
-                    </div>
-                    <div class="border-l border-zinc-700 pl-2">
-                        <span class="text-xs font-bold tracking-[0.25em] text-gray-300 block">AUTOMÓVILES</span>
-                    </div>
-                </div>
-                <!-- Subtítulo pequeño ubicado directamente debajo del logo -->
-                <span class="text-[10px] text-gray-400 font-medium tracking-normal mt-0.5">Encontrá tu próximo auto con la mejor atención y confianza.</span>
-            </div>
-            
-            <!-- BOTONES DE ACCIÓN SUPERIOR -->
-            <div class="flex flex-wrap items-center justify-center gap-2">
-                <!-- VENDER VEHÍCULO -->
-                <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quiero%20vender%20mi%20vehículo%20y%20me%20gustaría%20recibir%20más%20información." target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs shadow-lg shadow-red-950/40">
-                    <i class="fa-solid fa-car text-xs"></i>
-                    <span>Quiero vender mi vehículo</span>
-                </a>
+<body class="bg-black text-gray-200 min-h-screen flex flex-col">
 
-                <!-- SOBRE NOSOTROS -->
-                <button id="open-about-btn" class="bg-zinc-900 hover:bg-zinc-800 text-gray-200 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs">
-                    <i class="fa-solid fa-users text-red-500 text-xs"></i>
-                    <span>Sobre nosotros</span>
-                </button>
-
-                <!-- FINANCIACIÓN -->
-                <button id="open-finance-btn" class="bg-zinc-900 hover:bg-zinc-800 text-gray-200 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg transition duration-200 flex items-center space-x-1.5 text-xs">
-                    <i class="fa-solid fa-calculator text-red-500 text-xs"></i>
-                    <span>Financiación</span>
-                </button>
-
-                <!-- ACCESO ADMIN -->
-                <button id="open-modal-btn" title="Acceso Panel Admin" class="bg-zinc-900 hover:bg-red-600/20 text-red-500 hover:text-red-400 border border-red-600/50 font-bold px-3 py-2 rounded-lg transition duration-200 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-lock text-xs"></i>
-                </button>
-            </div>
+<header class="bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="flex flex-col items-start font-brand cursor-pointer" onclick="resetFilters()">
+      <div class="flex items-center gap-2">
+        <div class="text-3xl font-black tracking-tighter">
+          <span class="text-gray-300">M</span><span class="text-red-600">M</span>
         </div>
-    </header>
+        <div class="border-l border-zinc-700 pl-2">
+          <span class="text-xs font-bold tracking-[0.25em] text-gray-300 block">AUTOMÓVILES</span>
+        </div>
+      </div>
+      <span class="text-[10px] text-gray-400 mt-0.5">Encontrá tu próximo auto con la mejor atención y confianza.</span>
+    </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
-        
-        <!-- BARRA SUPERIOR CON BOTÓN FILTRAR Y BANNER COMPACTO -->
-        <div class="flex flex-col md:flex-row justify-between items-center gap-3 mb-6">
-            
-            <!-- BOTÓN DESPLEGABLE DE FILTROS -->
-            <button id="toggle-filters-btn" class="w-full md:w-auto bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-gray-200 font-semibold px-4 py-2.5 rounded-xl transition flex items-center justify-between md:justify-start space-x-3 text-xs shadow-md">
-                <span class="flex items-center space-x-2">
-                    <i class="fa-solid fa-sliders text-red-500"></i>
-                    <span>Filtrar Vehículos</span>
-                </span>
-                <i id="filter-chevron" class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quiero%20vender%20mi%20vehículo."
+         target="_blank"
+         class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-lg text-xs flex items-center gap-2">
+        <i class="fa-solid fa-car"></i> Quiero vender mi vehículo
+      </a>
+
+      <button id="about-btn" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg text-xs">
+        <i class="fa-solid fa-users text-red-500 mr-1"></i> Sobre nosotros
+      </button>
+
+      <button id="finance-btn" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 font-bold px-3.5 py-2 rounded-lg text-xs">
+        <i class="fa-solid fa-calculator text-red-500 mr-1"></i> Financiación
+      </button>
+
+      <button id="admin-btn" title="Panel de administración"
+              class="bg-zinc-900 hover:bg-red-600/20 text-red-500 border border-red-600/50 font-bold px-3 py-2 rounded-lg text-xs">
+        <i class="fa-solid fa-lock"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+  <div id="firebase-error"
+       class="hidden mb-5 bg-red-950/40 border border-red-800 rounded-xl p-4 text-sm text-red-300">
+  </div>
+
+  <div class="flex flex-col md:flex-row justify-between items-center gap-3 mb-6">
+    <button id="toggle-filters"
+            class="w-full md:w-auto bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center justify-between gap-3">
+      <span><i class="fa-solid fa-sliders text-red-500 mr-2"></i>Filtrar Vehículos</span>
+      <i id="filter-chevron" class="fa-solid fa-chevron-down text-gray-500"></i>
+    </button>
+
+    <div class="w-full md:w-auto bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 flex items-center justify-between gap-4">
+      <span class="text-xs text-gray-300 hidden sm:inline">
+        <i class="fa-solid fa-magnifying-glass-location text-red-500 mr-1"></i>
+        ¿Buscás un auto específico que no está acá?
+      </span>
+      <button id="custom-search-btn" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-600/30 font-semibold px-3 py-1.5 rounded-lg text-xs">
+        Búsqueda personalizada
+      </button>
+    </div>
+  </div>
+
+  <div id="filters" class="hidden bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-[11px] font-semibold text-gray-400 mb-1">Motorización / Tipo</label>
+        <select id="filter-fuel" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg text-xs">
+          <option value="all">Todos los tipos</option>
+          <option value="combustion">Combustión (Nafta / Diésel)</option>
+          <option value="Híbrido">Híbrido</option>
+          <option value="Eléctrico">Eléctrico</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-gray-400 mb-1">Marca</label>
+        <select id="filter-brand" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg text-xs">
+          <option value="all">Todas las marcas</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-gray-400 mb-1">Ordenar por</label>
+        <select id="filter-sort" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg text-xs">
+          <option value="default">Más recientes</option>
+          <option value="price-asc">Precio: Menor a Mayor</option>
+          <option value="price-desc">Precio: Mayor a Menor</option>
+          <option value="year-desc">Año: Más nuevo</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="reset-filters" class="mt-4 text-xs text-gray-400 hover:text-red-500">
+      <i class="fa-solid fa-rotate-left mr-1"></i> Limpiar filtros
+    </button>
+  </div>
+
+  <div class="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
+    <h2 class="text-xl sm:text-2xl font-bold text-white font-brand flex items-center gap-2">
+      <span class="w-2 h-6 bg-red-600 rounded-full"></span>
+      Vehículos Disponibles
+    </h2>
+    <span id="vehicle-count" class="text-xs font-semibold text-red-400 bg-red-950/40 border border-red-800/50 px-3 py-1 rounded-full">
+      Cargando...
+    </span>
+  </div>
+
+  <div id="catalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div id="loading" class="col-span-full text-center py-16">
+      <i class="fa-solid fa-spinner fa-spin text-4xl text-red-600"></i>
+      <p class="mt-3 text-gray-500 text-sm">Conectando con Firebase...</p>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-zinc-950 text-gray-500 py-6 border-t border-zinc-900 text-center text-xs">
+  <p>&copy; 2026 <span class="text-gray-300 font-bold">MM</span> <span class="text-red-600 font-bold">AUTOMÓVILES</span>. Todos los derechos reservados.</p>
+</footer>
+
+<!-- MODAL INFO -->
+<div id="about-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-50 justify-center items-center p-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-2xl w-full p-6 relative">
+    <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+    <div class="text-center mb-6">
+      <i class="fa-solid fa-handshake text-3xl text-red-500"></i>
+      <h3 class="text-2xl font-black text-white font-brand mt-2">Sobre Nosotros</h3>
+    </div>
+    <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+      <p>Somos el puente directo entre propietarios y compradores. Nos especializamos en un servicio de intermediación ágil, transparente y seguro.</p>
+      <p><b class="text-white">Vos fijás el valor:</b> el precio final de tu vehículo lo decidís vos.</p>
+      <p><b class="text-white">Sin perder tu movilidad:</b> podés seguir utilizando tu vehículo hasta concretar la operación.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FINANCIACION -->
+<div id="finance-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-50 justify-center items-center p-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 relative">
+    <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+    <div class="text-center">
+      <i class="fa-solid fa-percent text-3xl text-red-500"></i>
+      <h3 class="text-2xl font-black text-white font-brand mt-2">Financiación</h3>
+      <p class="text-red-500 font-bold text-lg">De hasta un 50%</p>
+    </div>
+    <div class="mt-6 bg-black/50 p-4 rounded-xl border border-zinc-800 text-sm text-gray-300">
+      <p class="font-semibold text-gray-400 mb-2">Requisitos:</p>
+      <ul class="space-y-2">
+        <li>✓ 6 meses de antigüedad laboral</li>
+        <li>✓ Último recibo de sueldo</li>
+        <li>✓ Constancia de domicilio</li>
+        <li>✓ Cédula vigente</li>
+        <li>✓ Ingreso mínimo $20.000 líquidos</li>
+      </ul>
+    </div>
+    <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quisiera%20consultar%20por%20la%20financiación."
+       target="_blank"
+       class="mt-6 block text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl">
+      <i class="fa-brands fa-whatsapp mr-2"></i>Consultar por financiación
+    </a>
+  </div>
+</div>
+
+<!-- MODAL BUSQUEDA -->
+<div id="custom-search-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-50 justify-center items-center p-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 relative">
+    <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+    <h3 class="text-xl font-bold text-white font-brand">Búsqueda Personalizada</h3>
+    <p class="text-xs text-gray-400 mt-1">Contanos qué vehículo estás buscando.</p>
+    <form id="custom-search-form" class="space-y-4 mt-5">
+      <input id="custom-name" required placeholder="Nombre y Apellido"
+             class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg text-sm">
+      <input id="custom-car" required placeholder="Marca y modelo"
+             class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg text-sm">
+      <input id="custom-budget" required type="number" placeholder="Presupuesto aproximado (USD)"
+             class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg text-sm">
+      <button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl">
+        <i class="fa-brands fa-whatsapp mr-2"></i>Solicitar por WhatsApp
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL ADMIN -->
+<div id="admin-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-50 justify-center items-center p-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 relative max-h-[92vh] overflow-y-auto scrollbar">
+    <button id="admin-close" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+
+    <div id="login-step">
+      <div class="text-center mb-6">
+        <i class="fa-solid fa-lock text-3xl text-red-500"></i>
+        <h3 class="text-xl font-bold text-white font-brand mt-2">Panel de Administración</h3>
+      </div>
+      <form id="login-form" class="space-y-4">
+        <input id="admin-pass" type="password" required placeholder="Contraseña"
+               class="w-full px-4 py-2.5 bg-black border border-zinc-700 text-white rounded-lg">
+        <p id="login-error" class="hidden text-red-500 text-xs">Contraseña incorrecta.</p>
+        <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg">Ingresar</button>
+      </form>
+    </div>
+
+    <div id="admin-step" class="hidden">
+      <h3 class="text-xl font-bold text-white font-brand mb-1">Publicar / Gestionar vehículos</h3>
+      <p id="admin-status" class="text-xs text-gray-400 mb-5"></p>
+
+      <form id="vehicle-form" class="space-y-4">
+        <input type="hidden" id="edit-id">
+
+        <input id="title" required placeholder="Marca y Modelo"
+               class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg">
+
+        <div class="grid grid-cols-2 gap-4">
+          <input id="year" required type="number" placeholder="Año"
+                 class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg">
+          <input id="km" required type="number" placeholder="Kilómetros"
+                 class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <input id="price" required type="number" placeholder="Precio USD"
+                 class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg">
+          <select id="fuel" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg">
+            <option value="Nafta">Nafta</option>
+            <option value="Diésel">Diésel</option>
+            <option value="Híbrido">Híbrido</option>
+            <option value="Eléctrico">Eléctrico</option>
+          </select>
+        </div>
+
+        <textarea id="description" required rows="3" placeholder="Descripción"
+                  class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg"></textarea>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Fotos</label>
+          <input id="image-files" type="file" accept="image/*" multiple
+                 class="w-full px-3 py-2 bg-black border border-zinc-700 text-gray-300 rounded-lg">
+          <div id="preview-container" class="grid grid-cols-3 gap-2 mt-3"></div>
+        </div>
+
+        <button id="submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg">
+          Publicar Vehículo
+        </button>
+        <button id="cancel-edit" type="button" class="hidden w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 rounded-lg">
+          Cancelar edición
+        </button>
+      </form>
+
+      <div class="border-t border-zinc-800 mt-6 pt-5">
+        <h4 class="text-sm font-bold text-white mb-3">Vehículos cargados</h4>
+        <div id="admin-list" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GALERIA -->
+<div id="gallery-modal" class="modal fixed inset-0 bg-black/90 backdrop-blur-md z-50 justify-center items-center p-4">
+  <div class="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto scrollbar relative p-5">
+    <button id="gallery-close" class="absolute top-3 right-3 bg-zinc-900 text-white rounded-full w-9 h-9 z-10">&times;</button>
+
+    <div class="relative h-72 sm:h-[500px] bg-black rounded-xl overflow-hidden flex items-center justify-center">
+      <img id="gallery-main" src="" class="max-h-full max-w-full object-contain" alt="">
+      <button id="gallery-prev" class="absolute left-3 bg-black/70 rounded-full w-10 h-10"><i class="fa-solid fa-chevron-left"></i></button>
+      <button id="gallery-next" class="absolute right-3 bg-black/70 rounded-full w-10 h-10"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <div id="gallery-thumbs" class="flex gap-2 overflow-x-auto mt-3 pb-2"></div>
+
+    <h2 id="gallery-title" class="text-2xl font-bold font-brand text-white mt-4"></h2>
+    <div id="gallery-details" class="flex flex-wrap gap-3 text-xs text-gray-400 mt-2"></div>
+    <p id="gallery-description" class="text-gray-300 text-sm leading-relaxed bg-zinc-900 p-4 rounded-xl mt-4"></p>
+    <div id="gallery-price" class="text-2xl font-black text-red-500 font-brand mt-5"></div>
+
+    <a id="gallery-whatsapp" target="_blank"
+       class="mt-5 block text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl">
+      <i class="fa-brands fa-whatsapp mr-2"></i>Consultar por este vehículo
+    </a>
+  </div>
+</div>
+
+<script type="module">
+/* ============================================================
+   MM AUTOMÓVILES - FIREBASE
+   ============================================================
+   IMPORTANTE:
+   1. Pegá acá la configuración EXACTA de tu proyecto Firebase.
+   2. Si tu colección tiene otro nombre, agregala en COLLECTIONS.
+   3. El lector acepta varios nombres de campos para reconocer
+      vehículos que ya estén cargados.
+   ============================================================ */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  serverTimestamp,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+/* ============================================================
+   PEGAR CONFIG FIREBASE
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "PEGAR_API_KEY",
+  authDomain: "PEGAR_AUTH_DOMAIN",
+  projectId: "PEGAR_PROJECT_ID",
+  storageBucket: "PEGAR_STORAGE_BUCKET",
+  messagingSenderId: "PEGAR_MESSAGING_SENDER_ID",
+  appId: "PEGAR_APP_ID"
+};
+
+/* Cambiá/añadí nombres si tu colección se llama diferente. */
+const COLLECTIONS = [
+  "vehicles",
+  "vehiculos",
+  "autos",
+  "cars",
+  "vehículos"
+];
+
+/* Contraseña del panel.
+   IMPORTANTE: esto NO es seguridad real para producción.
+   Para producción conviene Firebase Authentication. */
+const ADMIN_PASSWORD = "1234";
+
+let db = null;
+let storage = null;
+let activeCollection = null;
+let unsubscribe = null;
+
+let vehicles = [];
+let filteredVehicles = [];
+let galleryVehicle = null;
+let galleryIndex = 0;
+let editingId = null;
+let existingEditImages = [];
+
+const $ = (id) => document.getElementById(id);
+
+function showFirebaseError(message) {
+  $("firebase-error").textContent = message;
+  $("firebase-error").classList.remove("hidden");
+}
+
+function hideFirebaseError() {
+  $("firebase-error").classList.add("hidden");
+}
+
+function safeNumber(value) {
+  if (value === null || value === undefined || value === "") return 0;
+  const n = Number(String(value).replace(/[^\d.-]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function first(obj, keys, fallback = "") {
+  for (const key of keys) {
+    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+      return obj[key];
+    }
+  }
+  return fallback;
+}
+
+function normalizeImages(value) {
+  if (!value) return [];
+
+  if (Array.isArray(value)) {
+    return value
+      .map(x => {
+        if (typeof x === "string") return x;
+        if (x && typeof x === "object") {
+          return x.url || x.src || x.downloadURL || x.downloadUrl || "";
+        }
+        return "";
+      })
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value.split(",").map(x => x.trim()).filter(Boolean);
+  }
+
+  return [];
+}
+
+/* Convierte documentos de Firebase al formato que usa la web. */
+function normalizeVehicle(id, data) {
+  const title = String(first(data, [
+    "title", "name", "nombre", "modelo", "vehicle", "vehiculo", "car"
+  ], "Vehículo"));
+
+  const images = normalizeImages(first(data, [
+    "images", "imageUrls", "imageURLs", "photos", "fotos", "imagenes",
+    "imagesUrl", "image_urls", "gallery"
+  ], []));
+
+  const createdRaw = data.createdAt || data.created_at || data.fecha || data.timestamp || null;
+
+  let createdMs = 0;
+  if (createdRaw?.toMillis) createdMs = createdRaw.toMillis();
+  else if (createdRaw instanceof Date) createdMs = createdRaw.getTime();
+  else if (typeof createdRaw === "number") createdMs = createdRaw;
+  else if (typeof createdRaw === "string") createdMs = Date.parse(createdRaw) || 0;
+
+  return {
+    id,
+    raw: data,
+    title,
+    year: safeNumber(first(data, ["year", "año", "ano", "anio"])),
+    km: safeNumber(first(data, ["km", "kilometers", "kilometros", "kilómetros", "mileage"])),
+    price: safeNumber(first(data, ["price", "precio", "priceUsd", "priceUSD", "valor"])),
+    fuel: String(first(data, ["fuel", "combustible", "tipo", "motorization", "motorizacion"], "Nafta")),
+    description: String(first(data, ["description", "descripcion", "detalle", "details"], "")),
+    images,
+    createdMs
+  };
+}
+
+/* ============================================================
+   FIREBASE: BUSCAR AUTOMÁTICAMENTE LA COLECCIÓN
+   ============================================================ */
+async function connectFirebase() {
+  try {
+    if (
+      firebaseConfig.apiKey === "PEGAR_API_KEY" ||
+      firebaseConfig.projectId === "PEGAR_PROJECT_ID"
+    ) {
+      throw new Error(
+        "Todavía no pegaste la configuración de Firebase en el código. " +
+        "Buscá firebaseConfig y colocá los datos de tu proyecto."
+      );
+    }
+
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    storage = getStorage(app);
+
+    /* Intentamos conectar a las colecciones más comunes.
+       Firestore no permite listar nombres de colecciones desde el navegador,
+       por eso probamos las que definimos arriba. */
+    await tryCollections();
+
+  } catch (error) {
+    console.error("Firebase:", error);
+    showFirebaseError("Error de Firebase: " + (error.message || error));
+    $("vehicle-count").textContent = "Error";
+    $("loading")?.remove();
+  }
+}
+
+async function tryCollections() {
+  /* Probamos una colección por vez usando onSnapshot.
+     La primera que tenga documentos será la utilizada. */
+  let found = false;
+
+  for (const collectionName of COLLECTIONS) {
+    try {
+      const colRef = collection(db, collectionName);
+
+      await new Promise((resolve) => {
+        let finished = false;
+
+        const unsub = onSnapshot(
+          colRef,
+          (snapshot) => {
+            if (finished) return;
+            finished = true;
+            unsub();
+
+            if (!snapshot.empty) {
+              activeCollection = collectionName;
+              found = true;
+              startRealtimeListener(collectionName);
+            }
+            resolve();
+          },
+          (error) => {
+            if (finished) return;
+            finished = true;
+            unsub();
+            console.warn("No se pudo leer", collectionName, error);
+            resolve();
+          }
+        );
+      });
+
+      if (found) break;
+    } catch (e) {
+      console.warn("Colección omitida:", collectionName, e);
+    }
+  }
+
+  if (!found) {
+    /* Aunque esté vacía, usamos "vehicles" para que publicar funcione. */
+    activeCollection = "vehicles";
+    startRealtimeListener(activeCollection);
+
+    showFirebaseError(
+      "Firebase está conectado, pero no encontré documentos en las colecciones: " +
+      COLLECTIONS.join(", ") +
+      ". Si tus autos están en otra colección, agregá su nombre en COLLECTIONS."
+    );
+  } else {
+    hideFirebaseError();
+    $("admin-status").textContent =
+      "Conectado a Firebase • Colección: " + activeCollection;
+  }
+}
+
+function startRealtimeListener(collectionName) {
+  if (unsubscribe) unsubscribe();
+
+  const colRef = collection(db, collectionName);
+
+  unsubscribe = onSnapshot(
+    colRef,
+    (snapshot) => {
+      vehicles = snapshot.docs.map(d => normalizeVehicle(d.id, d.data()));
+
+      /* Ordenamos en JS para no depender de que todos los documentos
+         tengan createdAt. */
+      vehicles.sort((a, b) => b.createdMs - a.createdMs);
+
+      rebuildBrandFilter();
+      renderVehicles();
+      renderAdminList();
+
+      $("loading")?.remove();
+      $("admin-status").textContent =
+        `Conectado a Firebase • ${vehicles.length} vehículo(s) • Colección: ${collectionName}`;
+    },
+    (error) => {
+      console.error("onSnapshot:", error);
+      showFirebaseError(
+        "Firebase rechazó la lectura de vehículos. Revisá las reglas de Firestore. " +
+        error.message
+      );
+      $("vehicle-count").textContent = "Error";
+      $("loading")?.remove();
+    }
+  );
+}
+
+/* ============================================================
+   RENDER CATÁLOGO
+   ============================================================ */
+function getBrand(title) {
+  return String(title).trim().split(/\s+/)[0] || "Otros";
+}
+
+function rebuildBrandFilter() {
+  const select = $("filter-brand");
+  const current = select.value;
+
+  const brands = [...new Set(vehicles.map(v => getBrand(v.title)))]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, "es"));
+
+  select.innerHTML = `<option value="all">Todas las marcas</option>`;
+  brands.forEach(brand => {
+    const option = document.createElement("option");
+    option.value = brand;
+    option.textContent = brand;
+    select.appendChild(option);
+  });
+
+  if (brands.includes(current)) select.value = current;
+}
+
+function applyFilters() {
+  const fuel = $("filter-fuel").value;
+  const brand = $("filter-brand").value;
+  const sort = $("filter-sort").value;
+
+  filteredVehicles = vehicles.filter(v => {
+    const fuelOK =
+      fuel === "all" ||
+      (fuel === "combustion" && ["Nafta", "Diésel", "Diesel"].includes(v.fuel)) ||
+      v.fuel === fuel;
+
+    const brandOK = brand === "all" || getBrand(v.title) === brand;
+
+    return fuelOK && brandOK;
+  });
+
+  if (sort === "price-asc") filteredVehicles.sort((a,b) => a.price - b.price);
+  if (sort === "price-desc") filteredVehicles.sort((a,b) => b.price - a.price);
+  if (sort === "year-desc") filteredVehicles.sort((a,b) => b.year - a.year);
+
+  return filteredVehicles;
+}
+
+function formatPrice(price) {
+  if (!price) return "Consultar";
+  return "USD " + new Intl.NumberFormat("es-UY").format(price);
+}
+
+function formatKm(km) {
+  if (!km) return "—";
+  return new Intl.NumberFormat("es-UY").format(km) + " km";
+}
+
+function escapeHTML(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function renderVehicles() {
+  const catalog = $("catalog");
+  const list = applyFilters();
+
+  $("vehicle-count").textContent =
+    `${list.length} ${list.length === 1 ? "unidad" : "unidades"}`;
+
+  if (!list.length) {
+    catalog.innerHTML = `
+      <div class="col-span-full text-center py-16">
+        <i class="fa-solid fa-car-side text-5xl text-zinc-700"></i>
+        <p class="mt-4 text-gray-400">No hay vehículos que coincidan con los filtros.</p>
+      </div>`;
+    return;
+  }
+
+  catalog.innerHTML = list.map(v => {
+    const image = v.images[0] ||
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80";
+
+    return `
+      <article class="vehicle-card bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl hover:border-red-600/50 transition">
+        <button onclick="openGallery('${v.id}')"
+                class="block w-full relative aspect-[16/10] bg-zinc-900 overflow-hidden">
+          <img src="${escapeHTML(image)}"
+               alt="${escapeHTML(v.title)}"
+               class="card-img w-full h-full object-cover"
+               loading="lazy"
+               onerror="this.src='https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80'">
+          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent h-24"></div>
+          <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">
+            DISPONIBLE
+          </span>
+          ${v.images.length > 1 ? `
+            <span class="absolute top-3 right-3 bg-black/70 text-white text-[10px] px-2 py-1 rounded-lg">
+              <i class="fa-solid fa-images mr-1"></i>${v.images.length}
+            </span>` : ""}
+        </button>
+
+        <div class="p-5">
+          <h3 class="text-xl font-bold text-white font-brand">${escapeHTML(v.title)}</h3>
+
+          <div class="grid grid-cols-2 gap-2 mt-4 text-xs text-gray-400">
+            <span><i class="fa-regular fa-calendar text-red-500 mr-1"></i>${v.year || "—"}</span>
+            <span><i class="fa-solid fa-road text-red-500 mr-1"></i>${formatKm(v.km)}</span>
+            <span><i class="fa-solid fa-gas-pump text-red-500 mr-1"></i>${escapeHTML(v.fuel)}</span>
+          </div>
+
+          <p class="text-gray-400 text-xs mt-4 line-clamp-2 min-h-[32px]">
+            ${escapeHTML(v.description)}
+          </p>
+
+          <div class="flex justify-between items-end gap-3 mt-5 pt-4 border-t border-zinc-800">
+            <div>
+              <span class="block text-[10px] uppercase text-gray-500">Precio</span>
+              <span class="text-xl font-black text-red-500 font-brand">${formatPrice(v.price)}</span>
+            </div>
+            <button onclick="openGallery('${v.id}')"
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-xs">
+              Ver vehículo
             </button>
-
-            <!-- BANNER DE BÚSQUEDA PERSONALIZADA COMPACTO -->
-            <div class="w-full md:w-auto bg-zinc-950/80 border border-zinc-800/80 hover:border-red-600/40 rounded-xl px-4 py-2 flex items-center justify-between gap-4 transition shadow-sm">
-                <div class="flex items-center space-x-2 text-xs">
-                    <i class="fa-solid fa-magnifying-glass-location text-red-500"></i>
-                    <span class="text-gray-300 font-medium hidden sm:inline">¿Buscás un auto específico que no está acá?</span>
-                    <span class="text-gray-300 font-medium sm:hidden">¿Buscás un auto en particular?</span>
-                </div>
-                <button id="open-custom-search-btn" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-600/30 font-semibold px-3 py-1.5 rounded-lg transition duration-200 text-xs shrink-0 flex items-center space-x-1.5">
-                    <span>Búsqueda personalizada</span>
-                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                </button>
-            </div>
+          </div>
         </div>
+      </article>`;
+  }).join("");
+}
 
-        <!-- SECCIÓN DE FILTROS OCULTA POR DEFECTO -->
-        <div id="filters-container" class="hidden bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-6 shadow-xl transition-all duration-300">
-            <div class="flex items-center justify-between mb-3 border-b border-zinc-800/80 pb-2">
-                <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Opciones de filtrado</span>
-                <button id="reset-filters-btn" class="text-xs text-gray-400 hover:text-red-500 transition flex items-center gap-1">
-                    <i class="fa-solid fa-rotate-left"></i>
-                    Limpiar filtros
-                </button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <!-- COMBUSTIBLE -->
-                <div>
-                    <label class="block text-[11px] font-semibold text-gray-400 mb-1">Motorización / Tipo</label>
-                    <select id="filter-fuel" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg focus:ring-1 focus:ring-red-600 focus:outline-none text-xs">
-                        <option value="all">Todos los tipos</option>
-                        <option value="combustion">Combustión (Nafta / Diésel)</option>
-                        <option value="Híbrido">Híbrido</option>
-                        <option value="Eléctrico">Eléctrico</option>
-                    </select>
-                </div>
+/* ============================================================
+   GALERÍA
+   ============================================================ */
+window.openGallery = function(id) {
+  const v = vehicles.find(x => x.id === id);
+  if (!v) return;
 
-                <!-- MARCA -->
-                <div>
-                    <label class="block text-[11px] font-semibold text-gray-400 mb-1">Marca</label>
-                    <select id="filter-brand" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg focus:ring-1 focus:ring-red-600 focus:outline-none text-xs">
-                        <option value="all">Todas las marcas</option>
-                    </select>
-                </div>
+  galleryVehicle = v;
+  galleryIndex = 0;
 
-                <!-- ORDEN -->
-                <div>
-                    <label class="block text-[11px] font-semibold text-gray-400 mb-1">Ordenar por</label>
-                    <select id="filter-sort" class="w-full px-3 py-2 bg-black border border-zinc-800 text-white rounded-lg focus:ring-1 focus:ring-red-600 focus:outline-none text-xs">
-                        <option value="default">Más recientes</option>
-                        <option value="price-asc">Precio: Menor a Mayor</option>
-                        <option value="price-desc">Precio: Mayor a Menor</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+  $("gallery-title").textContent = v.title;
+  $("gallery-description").textContent = v.description || "Sin descripción.";
+  $("gallery-price").textContent = formatPrice(v.price);
 
-        <div class="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
-            <h2 class="text-xl sm:text-2xl font-bold text-white font-brand flex items-center space-x-2">
-                <span class="w-2 h-6 bg-red-600 rounded-full inline-block"></span>
-                <span>Vehículos Disponibles</span>
-            </h2>
-            <span id="vehicle-count" class="text-xs font-semibold text-red-400 bg-red-950/40 border border-red-800/50 px-3 py-1 rounded-full">Cargando...</span>
-        </div>
+  $("gallery-details").innerHTML = `
+    <span><i class="fa-regular fa-calendar text-red-500 mr-1"></i>${v.year || "—"}</span>
+    <span><i class="fa-solid fa-road text-red-500 mr-1"></i>${formatKm(v.km)}</span>
+    <span><i class="fa-solid fa-gas-pump text-red-500 mr-1"></i>${escapeHTML(v.fuel)}</span>
+  `;
 
-        <!-- CARDS CONTAINER -->
-        <div id="catalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div id="loading" class="col-span-full text-center py-16">
-                <i class="fa-solid fa-spinner fa-spin text-4xl text-red-600"></i>
-                <p class="mt-3 text-gray-500 text-sm">Cargando unidades...</p>
-            </div>
-        </div>
-    </main>
+  const text = encodeURIComponent(
+    `Hola MM Automóviles, estoy interesado en el ${v.title} (${v.year}). ¿Me pasan más información?`
+  );
+  $("gallery-whatsapp").href = `https://wa.me/59899321154?text=${text}`;
 
-    <!-- FOOTER -->
-    <footer class="bg-zinc-950 text-gray-500 py-6 border-t border-zinc-900 text-center text-xs">
-        <p>&copy; 2026 <span class="text-gray-300 font-bold">MM</span> <span class="text-red-600 font-bold">AUTOMÓVILES</span>. Todos los derechos reservados.</p>
-    </footer>
+  renderGallery();
+  openModal("gallery-modal");
+};
 
-    <!-- MODAL SOBRE NOSOTROS -->
-    <div id="about-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto">
-            <button id="close-about-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold transition">&times;</button>
-            
-            <div class="text-center mb-8">
-                <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
-                    <i class="fa-solid fa-handshake text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-white font-brand uppercase tracking-tight">Sobre Nosotros</h3>
-                <p class="text-xs text-red-500 font-semibold uppercase tracking-wider mt-1">Reinventando la compra y venta de vehículos</p>
-            </div>
+function renderGallery() {
+  const images = galleryVehicle?.images || [];
 
-            <div class="space-y-6 text-sm">
-                <!-- QUIÉNES SOMOS -->
-                <div class="bg-black/50 p-5 rounded-xl border border-zinc-800/80">
-                    <h4 class="text-lg font-bold text-white font-brand mb-2 flex items-center space-x-2">
-                        <span class="w-1.5 h-4 bg-red-600 rounded-full inline-block"></span>
-                        <span>¿Quiénes somos?</span>
-                    </h4>
-                    <p class="text-gray-300 leading-relaxed text-xs sm:text-sm">
-                        Somos el puente directo entre propietarios y compradores. Nos especializamos en un servicio de intermediación ágil, transparente y seguro, realizando una minuciosa filtración previa para conectar únicamente a vendedores con <strong class="text-white font-semibold">compradores genuinos y realmente interesados</strong>, optimizando el tiempo y la tranquilidad de ambas partes.
-                    </p>
-                </div>
+  if (!images.length) {
+    $("gallery-main").src =
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80";
+    $("gallery-thumbs").innerHTML = "";
+    return;
+  }
 
-                <!-- DIFERENCIALES -->
-                <div class="bg-black/50 p-5 rounded-xl border border-zinc-800/80">
-                    <h4 class="text-lg font-bold text-white font-brand mb-3 flex items-center space-x-2">
-                        <span class="w-1.5 h-4 bg-red-600 rounded-full inline-block"></span>
-                        <span>¿En qué nos diferenciamos de una automotora tradicional?</span>
-                    </h4>
-                    <ul class="space-y-3 text-xs sm:text-sm text-gray-300">
-                        <li class="flex items-start space-x-3">
-                            <i class="fa-solid fa-circle-check text-red-500 mt-0.5 text-base shrink-0"></i>
-                            <span><strong class="text-white font-semibold">Vos fijás el valor:</strong> El precio final de tu auto lo decidís vos. Nosotros te brindamos un asesoramiento de mercado profesional para potenciar la venta, pero la palabra final siempre es tuya.</span>
-                        </li>
-                        <li class="flex items-start space-x-3">
-                            <i class="fa-solid fa-circle-check text-red-500 mt-0.5 text-base shrink-0"></i>
-                            <span><strong class="text-white font-semibold">Sin perder tu movilidad:</strong> No tenés que dejar tu vehículo parado en ningún salón ni predio. Seguís usándolo en tu día a día con total normalidad hasta el momento exacto en que se concrete la operación.</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+  if (galleryIndex >= images.length) galleryIndex = 0;
+  if (galleryIndex < 0) galleryIndex = images.length - 1;
 
-            <div class="mt-8 text-center">
-                <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20me%20gustaría%20recibir%20más%20información%20sobre%20sus%20servicios." target="_blank" class="inline-flex bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition duration-200 items-center justify-center space-x-2 text-xs sm:text-sm shadow-lg shadow-red-950/40 w-full sm:w-auto">
-                    <i class="fa-brands fa-whatsapp text-lg"></i>
-                    <span>Hablar con un asesor</span>
-                </a>
-            </div>
-        </div>
+  $("gallery-main").src = images[galleryIndex];
+
+  $("gallery-thumbs").innerHTML = images.map((img, i) => `
+    <button onclick="setGalleryIndex(${i})"
+            class="w-20 h-14 shrink-0 rounded-lg overflow-hidden border ${i === galleryIndex ? "border-red-600" : "border-zinc-800"}">
+      <img src="${escapeHTML(img)}" class="w-full h-full object-cover" alt="">
+    </button>
+  `).join("");
+}
+
+window.setGalleryIndex = function(index) {
+  galleryIndex = index;
+  renderGallery();
+};
+
+$("gallery-prev").onclick = () => {
+  if (!galleryVehicle?.images?.length) return;
+  galleryIndex--;
+  renderGallery();
+};
+
+$("gallery-next").onclick = () => {
+  if (!galleryVehicle?.images?.length) return;
+  galleryIndex++;
+  renderGallery();
+};
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+$("admin-btn").onclick = () => openModal("admin-modal");
+
+$("admin-close").onclick = () => closeModal("admin-modal");
+
+$("login-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  if ($("admin-pass").value === ADMIN_PASSWORD) {
+    $("login-error").classList.add("hidden");
+    $("login-step").classList.add("hidden");
+    $("admin-step").classList.remove("hidden");
+    $("admin-pass").value = "";
+  } else {
+    $("login-error").classList.remove("hidden");
+  }
+});
+
+function resetVehicleForm() {
+  $("vehicle-form").reset();
+  $("edit-id").value = "";
+  editingId = null;
+  existingEditImages = [];
+  $("preview-container").innerHTML = "";
+  $("submit-btn").textContent = "Publicar Vehículo";
+  $("cancel-edit").classList.add("hidden");
+}
+
+$("cancel-edit").onclick = resetVehicleForm;
+
+$("image-files").addEventListener("change", () => {
+  const files = [...$("image-files").files];
+
+  $("preview-container").innerHTML = files.map((file, index) => {
+    const url = URL.createObjectURL(file);
+    return `
+      <div class="relative aspect-square rounded-lg overflow-hidden border border-zinc-700">
+        <img src="${url}" class="w-full h-full object-cover">
+        <span class="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded">
+          ${index + 1}
+        </span>
+      </div>`;
+  }).join("");
+});
+
+async function uploadImages(files, vehicleId) {
+  const urls = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const path = `vehicles/${vehicleId}/${Date.now()}_${i}_${safeName}`;
+    const storageRef = ref(storage, path);
+
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    urls.push(url);
+  }
+
+  return urls;
+}
+
+$("vehicle-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!db || !storage) {
+    alert("Firebase todavía no está conectado.");
+    return;
+  }
+
+  if (!activeCollection) activeCollection = "vehicles";
+
+  const button = $("submit-btn");
+  button.disabled = true;
+  button.textContent = editingId ? "Guardando..." : "Publicando...";
+
+  try {
+    const files = [...$("image-files").files];
+
+    const data = {
+      title: $("title").value.trim(),
+      year: Number($("year").value),
+      km: Number($("km").value),
+      price: Number($("price").value),
+      fuel: $("fuel").value,
+      description: $("description").value.trim(),
+      updatedAt: serverTimestamp()
+    };
+
+    if (editingId) {
+      let finalImages = [...existingEditImages];
+
+      if (files.length) {
+        const newImages = await uploadImages(files, editingId);
+        finalImages = [...finalImages, ...newImages];
+      }
+
+      data.images = finalImages;
+
+      await updateDoc(doc(db, activeCollection, editingId), data);
+      alert("Vehículo actualizado correctamente.");
+    } else {
+      data.createdAt = serverTimestamp();
+
+      /* Primero creamos el documento para obtener su ID. */
+      const newDoc = await addDoc(collection(db, activeCollection), data);
+
+      if (files.length) {
+        const urls = await uploadImages(files, newDoc.id);
+        await updateDoc(doc(db, activeCollection, newDoc.id), {
+          images: urls
+        });
+      }
+
+      alert("Vehículo publicado correctamente.");
+    }
+
+    resetVehicleForm();
+
+  } catch (error) {
+    console.error(error);
+    alert("No se pudo guardar el vehículo:\n\n" + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = editingId ? "Guardar cambios" : "Publicar Vehículo";
+  }
+});
+
+function renderAdminList() {
+  const container = $("admin-list");
+
+  if (!vehicles.length) {
+    container.innerHTML = `<p class="text-xs text-gray-500">No hay vehículos cargados.</p>`;
+    return;
+  }
+
+  container.innerHTML = vehicles.map(v => `
+    <div class="flex items-center justify-between gap-3 bg-black border border-zinc-800 rounded-lg p-2.5">
+      <div class="min-w-0">
+        <p class="text-sm font-semibold text-white truncate">${escapeHTML(v.title)}</p>
+        <p class="text-[11px] text-gray-500">${v.year || "—"} • ${formatPrice(v.price)}</p>
+      </div>
+      <div class="flex gap-1 shrink-0">
+        <button onclick="editVehicle('${v.id}')"
+                class="bg-zinc-800 hover:bg-zinc-700 text-white rounded-md w-8 h-8 text-xs">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button onclick="removeVehicle('${v.id}')"
+                class="bg-red-950 hover:bg-red-900 text-red-400 rounded-md w-8 h-8 text-xs">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
     </div>
-
-    <!-- MODAL BÚSQUEDA PERSONALIZADA -->
-    <div id="custom-search-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
-            <button id="close-custom-search-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
-            <div class="text-center mb-6">
-                <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
-                    <i class="fa-solid fa-magnifying-glass-car text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white font-brand">Búsqueda Personalizada</h3>
-                <p class="text-xs text-gray-400 mt-1">Ingresá los datos del vehículo que estás buscando y nos pondremos en contacto.</p>
-            </div>
-            
-            <form id="custom-search-form" class="space-y-4 text-sm">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nombre y Apellido</label>
-                    <input type="text" id="custom-name" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. Juan Pérez" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Marca y Modelo buscado</label>
-                    <input type="text" id="custom-car" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. Volkswagen Gol Trend 2018" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Presupuesto aproximado (USD)</label>
-                    <input type="number" id="custom-budget" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. 12000" required>
-                </div>
-                
-                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-sm shadow-lg shadow-green-950/30">
-                    <i class="fa-brands fa-whatsapp text-lg"></i>
-                    <span>Solicitar por WhatsApp</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL DE FINANCIACIÓN -->
-    <div id="finance-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
-            <button id="close-finance-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
-            <div class="text-center mb-6">
-                <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
-                    <i class="fa-solid fa-percent text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-white font-brand">Financiación</h3>
-                <p class="text-red-500 font-bold text-lg mt-1">De hasta un 50%</p>
-            </div>
-            
-            <div class="space-y-3 text-sm text-gray-300 bg-black/50 p-4 rounded-xl border border-zinc-800/80 mb-6">
-                <p class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-2">Requisitos:</p>
-                <ul class="space-y-2 text-xs sm:text-sm">
-                    <li class="flex items-start space-x-2">
-                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
-                        <span>6 meses de antigüedad laboral</span>
-                    </li>
-                    <li class="flex items-start space-x-2">
-                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
-                        <span>Último recibo de sueldo</span>
-                    </li>
-                    <li class="flex items-start space-x-2">
-                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
-                        <span>Constancia de domicilio (UTE, OSE, ANTEL, etc.)</span>
-                    </li>
-                    <li class="flex items-start space-x-2">
-                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
-                        <span>Cédula vigente</span>
-                    </li>
-                    <li class="flex items-start space-x-2">
-                        <i class="fa-solid fa-check text-red-500 mt-1"></i>
-                        <span>Ingreso mín. $20.000 líquidos</span>
-                    </li>
-                    <li class="flex items-start space-x-2 text-gray-400 italic pt-1">
-                        <i class="fa-solid fa-info-circle text-red-500/80 mt-1"></i>
-                        <span>Posible Clearing sujeto a aprobación crediticia</span>
-                    </li>
-                </ul>
-            </div>
-
-            <a href="https://wa.me/59899321154?text=Hola%20MM%20Automóviles,%20quisiera%20consultar%20por%20la%20financiación." target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-sm shadow-lg shadow-green-950/30">
-                <i class="fa-brands fa-whatsapp text-lg"></i>
-                <span>Consultar por financiación</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- MODAL DE PUBLICACIÓN / ADMIN -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
-            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
-            
-            <div id="auth-step">
-                <div class="text-center mb-6">
-                    <div class="inline-flex p-3 bg-red-950/50 text-red-500 border border-red-800/50 rounded-full mb-3">
-                        <i class="fa-solid fa-lock text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white font-brand">Panel de Administración</h3>
-                    <p class="text-xs text-gray-400 mt-1">Ingresá la contraseña para gestionar la página</p>
-                </div>
-                <form id="auth-form" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Contraseña</label>
-                        <input type="password" id="admin-pass" class="w-full px-4 py-2.5 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none text-sm" placeholder="••••••••" required>
-                    </div>
-                    <p id="auth-error" class="text-red-500 text-xs hidden">Contraseña incorrecta.</p>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition duration-200 text-sm shadow-lg shadow-red-950/50">
-                        Ingresar
-                    </button>
-                </form>
-            </div>
-
-            <div id="form-step" class="hidden">
-                <div class="text-center mb-6">
-                    <h3 class="text-xl font-bold text-white font-brand">Publicar Vehículo</h3>
-                    <p class="text-xs text-gray-400">Completá los datos del auto para agregarlo al catálogo</p>
-                </div>
-                <form id="vehicle-form" class="space-y-4 text-sm">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Marca y Modelo</label>
-                        <input type="text" id="title" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. BMW 320i M Sport" required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Año</label>
-                            <input type="number" id="year" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. 2021" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Kilómetros</label>
-                            <input type="number" id="km" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. 45000" required>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Precio (USD)</label>
-                            <input type="number" id="price" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ej. 35000" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Combustible</label>
-                            <select id="fuel" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none">
-                                <option value="Nafta">Nafta</option>
-                                <option value="Diésel">Diésel</option>
-                                <option value="Híbrido">Híbrido</option>
-                                <option value="Eléctrico">Eléctrico</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Fotos del Vehículo</label>
-                        <input type="file" id="image-files" accept="image/*" multiple class="w-full px-3 py-2 bg-black border border-zinc-700 text-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-red-950 file:text-red-400 hover:file:bg-red-900">
-                        <p class="text-[11px] text-gray-500 mt-1">Tocá la estrella <i class="fa-solid fa-star text-red-500"></i> para fijar la foto de portada.</p>
-                        <div id="preview-container" class="grid grid-cols-3 gap-2 mt-3"></div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Descripción</label>
-                        <textarea id="description" rows="2" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="Ficha service oficial, impecable estado..." required></textarea>
-                    </div>
-                    <button type="submit" id="submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition duration-200 shadow-lg shadow-red-950/50">
-                        Publicar Vehículo
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE EDICIÓN DE VEHÍCULO -->
-    <div id="edit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
-            <button id="close-edit-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">&times;</button>
-            <div class="text-center mb-6">
-                <h3 class="text-xl font-bold text-white font-brand">Editar Vehículo</h3>
-                <p class="text-xs text-gray-400">Modificá la información o reordená las imágenes</p>
-            </div>
-            <form id="edit-vehicle-form" class="space-y-4 text-sm">
-                <input type="hidden" id="edit-id">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Marca y Modelo</label>
-                    <input type="text" id="edit-title" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" required>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Año</label>
-                        <input type="number" id="edit-year" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Kilómetros</label>
-                        <input type="number" id="edit-km" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" required>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Precio (USD)</label>
-                        <input type="number" id="edit-price" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Combustible</label>
-                        <select id="edit-fuel" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none">
-                            <option value="Nafta">Nafta</option>
-                            <option value="Diésel">Diésel</option>
-                            <option value="Híbrido">Híbrido</option>
-                            <option value="Eléctrico">Eléctrico</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Fotos</label>
-                    <input type="file" id="edit-image-files" accept="image/*" multiple class="w-full px-3 py-2 bg-black border border-zinc-700 text-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-red-950 file:text-red-400 hover:file:bg-red-900">
-                    <div id="edit-preview-container" class="grid grid-cols-3 gap-2 mt-3"></div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Descripción</label>
-                    <textarea id="edit-description" rows="2" class="w-full px-3 py-2 bg-black border border-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none" required></textarea>
-                </div>
-                <button type="submit" id="edit-submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition duration-200">
-                    Guardar Cambios
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL GALERÍA -->
-    <div id="gallery-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl max-w-3xl w-full overflow-hidden relative max-h-[95vh] flex flex-col">
-            <button id="close-gallery-btn" class="absolute top-3 right-3 bg-zinc-900/80 hover:bg-red-600 text-white rounded-full w-9 h-9 flex items-center justify-center font-bold z-10 transition">&times;</button>
-            <div class="p-6 overflow-y-auto">
-                <div class="relative h-72 sm:h-96 bg-black border border-zinc-800 rounded-xl overflow-hidden mb-4 flex items-center justify-center">
-                    <img id="gallery-main-img" src="" class="max-h-full max-w-full object-contain">
-                </div>
-                <div id="gallery-thumbnails" class="flex space-x-2 overflow-x-auto pb-2 mb-4"></div>
-                <h2 id="gallery-title" class="text-2xl font-bold font-brand text-white mb-2"></h2>
-                <div id="gallery-details" class="flex flex-wrap gap-4 text-xs font-semibold text-gray-400 mb-4"></div>
-                <p id="gallery-description" class="text-gray-300 text-sm leading-relaxed bg-zinc-900/60 p-4 rounded-xl border border-zinc-800/80"></p>
-                <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-between items-center border-t border-zinc-800 pt-4">
-                    <span id="gallery-price" class="text-2xl font-black text-red-500 font-brand"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FIREBASE SDK & LÓGICA DE APLICACIÓN -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // CONFIGURACIÓN DE FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyB8MSux4yj49g_qcg1fqARg1vh5tZzMuU4",
-            authDomain: "mm-automoviles.firebaseapp.com",
-            projectId: "mm-automoviles",
-            storageBucket: "mm-automoviles.firebasestorage.app",
-            messagingSenderId: "462241158804",
-            appId: "1:462241158804:web:8da9b00c1bcc089a3f0681",
-            measurementId: "G-LQHCP4BLXZ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // ESTADO GLOBAL Y VARIABLES
-        let allVehicles = [];
-        let isAdminLoggedIn = false;
-        let selectedFiles = [];
-        let selectedCoverIndex = 0;
-        let editFiles = [];
-        let editExistingUrls = [];
-        let editCoverIndex = 0;
-
-        // ELEMENTOS DOM
-        const catalogContainer = document.getElementById('catalog');
-        const vehicleCountEl = document.getElementById('vehicle-count');
-        const filterFuel = document.getElementById('filter-fuel');
-        const filterBrand = document.getElementById('filter-brand');
-        const filterSort = document.getElementById('filter-sort');
-        const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
-        const filtersContainer = document.getElementById('filters-container');
-        const filterChevron = document.getElementById('filter-chevron');
-
-        // DESPLEGABLE FILTROS
-        toggleFiltersBtn.addEventListener('click', () => {
-            filtersContainer.classList.toggle('hidden');
-            filterChevron.classList.toggle('rotate-180');
-        });
-
-        // ESCUCHAR EN TIEMPO REAL DESDE FIRESTORE
-        const q = query(collection(db, "vehicles"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-            allVehicles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateBrandOptions();
-            applyFiltersAndRender();
-        }, (error) => {
-            console.error("Error al cargar publicaciones:", error);
-            catalogContainer.innerHTML = `
-                <div class="col-span-full text-center py-12 text-red-500 text-sm">
-                    Error al conectar con la base de datos.
-                </div>
-            `;
-        });
-
-        // ACTUALIZAR MARCAS EN EL FILTRO
-        function updateBrandOptions() {
-            const currentSelected = filterBrand.value;
-            const brands = [...new Set(allVehicles.map(v => {
-                const firstWord = v.title.trim().split(' ')[0];
-                return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
-            }))].sort();
-
-            filterBrand.innerHTML = '<option value="all">Todas las marcas</option>';
-            brands.forEach(brand => {
-                const opt = document.createElement('option');
-                opt.value = brand.toLowerCase();
-                opt.textContent = brand;
-                filterBrand.appendChild(opt);
-            });
-            filterBrand.value = currentSelected;
-        }
-
-        // RENDERIZAR Y FILTRAR
-        window.applyFiltersAndRender = function() {
-            let filtered = [...allVehicles];
-
-            const fuelVal = filterFuel.value;
-            if (fuelVal === 'combustion') {
-                filtered = filtered.filter(v => v.fuel === 'Nafta' || v.fuel === 'Diésel');
-            } else if (fuelVal !== 'all') {
-                filtered = filtered.filter(v => v.fuel === fuelVal);
-            }
-
-            const brandVal = filterBrand.value.toLowerCase();
-            if (brandVal !== 'all') {
-                filtered = filtered.filter(v => v.title.toLowerCase().startsWith(brandVal));
-            }
-
-            const sortVal = filterSort.value;
-            if (sortVal === 'price-asc') {
-                filtered.sort((a, b) => Number(a.price) - Number(b.price));
-            } else if (sortVal === 'price-desc') {
-                filtered.sort((a, b) => Number(b.price) - Number(a.price));
-            }
-
-            renderCatalog(filtered);
-        };
-
-        filterFuel.addEventListener('change', applyFiltersAndRender);
-        filterBrand.addEventListener('change', applyFiltersAndRender);
-        filterSort.addEventListener('change', applyFiltersAndRender);
-
-        window.resetFilters = function() {
-            filterFuel.value = 'all';
-            filterBrand.value = 'all';
-            filterSort.value = 'default';
-            applyFiltersAndRender();
-        };
-        document.getElementById('reset-filters-btn').addEventListener('click', resetFilters);
-
-        // IMPRIMIR VEHÍCULOS
-        function renderCatalog(vehicles) {
-            vehicleCountEl.textContent = `${vehicles.length} ${vehicles.length === 1 ? 'Disponible' : 'Disponibles'}`;
-
-            if (vehicles.length === 0) {
-                catalogContainer.innerHTML = `
-                    <div class="col-span-full text-center py-16 bg-zinc-950 border border-zinc-800 rounded-2xl p-8">
-                        <i class="fa-solid fa-car-side text-4xl text-zinc-700 mb-3"></i>
-                        <p class="text-gray-400 font-medium text-sm">No se encontraron vehículos que coincidan con la búsqueda.</p>
-                        <button onclick="resetFilters()" class="mt-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-bold px-4 py-2 rounded-lg text-white transition">
-                            Limpiar filtros
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            catalogContainer.innerHTML = vehicles.map(v => {
-                const images = v.images && v.images.length > 0 ? v.images : ['https://via.placeholder.com/600x400?text=Sin+Imagen'];
-                const coverImage = images[v.coverIndex || 0] || images[0];
-
-                return `
-                    <div class="bg-zinc-950 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col justify-between group">
-                        <div class="relative cursor-pointer overflow-hidden" onclick="openGallery('${v.id}')">
-                            <img src="${coverImage}" alt="${v.title}" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                            <span class="absolute top-3 left-3 bg-red-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm">
-                                ${v.fuel}
-                            </span>
-                            ${images.length > 1 ? `
-                                <span class="absolute bottom-3 right-3 bg-black/60 text-gray-300 text-[10px] font-semibold px-2 py-0.5 rounded-md backdrop-blur-sm flex items-center gap-1">
-                                    <i class="fa-solid fa-camera"></i> ${images.length}
-                                </span>
-                            ` : ''}
-                        </div>
-
-                        <div class="p-5 flex-grow flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-base font-bold text-white font-brand line-clamp-1 group-hover:text-red-500 transition">${v.title}</h3>
-                                <div class="flex items-center space-x-3 text-xs text-gray-400 mt-2 font-medium">
-                                    <span><i class="fa-solid fa-calendar text-red-500 mr-1"></i>${v.year}</span>
-                                    <span>•</span>
-                                    <span><i class="fa-solid fa-gauge text-red-500 mr-1"></i>${Number(v.km).toLocaleString()} km</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-3 line-clamp-2 leading-relaxed">${v.description}</p>
-                            </div>
-
-                            <div class="mt-5 pt-4 border-t border-zinc-800/80 flex items-center justify-between">
-                                <div>
-                                    <span class="text-[10px] uppercase tracking-wider text-gray-500 block font-semibold">Precio USD</span>
-                                    <span class="text-xl font-black text-white font-brand">${Number(v.price).toLocaleString()}</span>
-                                </div>
-
-                                <div class="flex items-center space-x-2">
-                                    ${isAdminLoggedIn ? `
-                                        <button onclick="openEditModal('${v.id}')" title="Editar" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-yellow-500 p-2 rounded-lg text-xs transition">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </button>
-                                        <button onclick="deleteVehicle('${v.id}')" title="Eliminar" class="bg-zinc-900 hover:bg-red-950/40 border border-red-900/50 text-red-500 p-2 rounded-lg text-xs transition">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    ` : ''}
-                                    <a href="https://wa.me/59899321154?text=${encodeURIComponent(`Hola MM Automóviles, me interesa la siguiente unidad: ${v.title} (USD ${v.price})`)}" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg text-xs transition flex items-center space-x-1 shadow-md shadow-red-950/40">
-                                        <i class="fa-brands fa-whatsapp text-sm"></i>
-                                        <span>Consultar</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // GALERÍA Y DETALLES
-        window.openGallery = function(id) {
-            const vehicle = allVehicles.find(v => v.id === id);
-            if (!vehicle) return;
-
-            const images = vehicle.images && vehicle.images.length > 0 ? vehicle.images : ['https://via.placeholder.com/600x400?text=Sin+Imagen'];
-            const galleryModal = document.getElementById('gallery-modal');
-            const mainImg = document.getElementById('gallery-main-img');
-            const thumbsContainer = document.getElementById('gallery-thumbnails');
-
-            document.getElementById('gallery-title').textContent = vehicle.title;
-            document.getElementById('gallery-price').textContent = `USD ${Number(vehicle.price).toLocaleString()}`;
-            document.getElementById('gallery-description').textContent = vehicle.description;
-
-            document.getElementById('gallery-details').innerHTML = `
-                <span class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-gray-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-calendar text-red-500"></i>
-                    <span>Año ${vehicle.year}</span>
-                </span>
-                <span class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-gray-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-gauge text-red-500"></i>
-                    <span>${Number(vehicle.km).toLocaleString()} km</span>
-                </span>
-                <span class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-gray-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-gas-pump text-red-500"></i>
-                    <span>${vehicle.fuel}</span>
-                </span>
-            `;
-
-            mainImg.src = images[vehicle.coverIndex || 0] || images[0];
-
-            thumbsContainer.innerHTML = images.map((img, idx) => `
-                <img src="${img}" onclick="document.getElementById('gallery-main-img').src='${img}'" class="h-16 w-20 object-cover rounded-lg border border-zinc-800 cursor-pointer hover:border-red-600 transition shrink-0">
-            `).join('');
-
-            galleryModal.classList.remove('hidden');
-        };
-
-        document.getElementById('close-gallery-btn').addEventListener('click', () => {
-            document.getElementById('gallery-modal').classList.add('hidden');
-        });
-
-        // AUTENTICACIÓN ADMIN Y GESTIÓN
-        const adminModal = document.getElementById('admin-modal');
-        const openModalBtn = document.getElementById('open-modal-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const authStep = document.getElementById('auth-step');
-        const formStep = document.getElementById('form-step');
-        const authForm = document.getElementById('auth-form');
-        const authError = document.getElementById('auth-error');
-
-        openModalBtn.addEventListener('click', () => adminModal.classList.remove('hidden'));
-        closeModalBtn.addEventListener('click', () => adminModal.classList.add('hidden'));
-
-        authForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === 'MM2026admin') {
-                isAdminLoggedIn = true;
-                authStep.classList.add('hidden');
-                formStep.classList.remove('hidden');
-                authError.classList.add('hidden');
-                applyFiltersAndRender();
-            } else {
-                authError.classList.remove('hidden');
-            }
-        });
-
-        // SUBIDA DE ARCHIVOS A CLOUDINARY
-        async function uploadImagesToCloudinary(files) {
-            const uploadPreset = "ml_default";
-            const cloudName = "demo"; // Modificar por tu Cloud Name personal en producción
-            const urls = [];
-
-            for (let file of files) {
-                if (typeof file === 'string') {
-                    urls.push(file);
-                    continue;
-                }
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', uploadPreset);
-
-                try {
-                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await res.json();
-                    if (data.secure_url) urls.push(data.secure_url);
-                } catch (err) {
-                    console.error("Error al subir imagen:", err);
-                }
-            }
-            return urls;
-        }
-
-        // PUBLICACIÓN NUEVA
-        const vehicleForm = document.getElementById('vehicle-form');
-        const imageFilesInput = document.getElementById('image-files');
-        const previewContainer = document.getElementById('preview-container');
-
-        imageFilesInput.addEventListener('change', (e) => {
-            selectedFiles = Array.from(e.target.files);
-            selectedCoverIndex = 0;
-            renderPreviews();
-        });
-
-        function renderPreviews() {
-            previewContainer.innerHTML = selectedFiles.map((file, idx) => `
-                <div class="relative border border-zinc-800 rounded-lg overflow-hidden h-20 bg-black group">
-                    <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
-                    <button type="button" onclick="setCover(${idx})" class="absolute top-1 left-1 text-xs ${selectedCoverIndex === idx ? 'text-yellow-400' : 'text-gray-400'} bg-black/60 p-1 rounded">
-                        <i class="fa-solid fa-star"></i>
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        window.setCover = function(idx) {
-            selectedCoverIndex = idx;
-            renderPreviews();
-        };
-
-        vehicleForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Guardando...';
-
-            try {
-                const imageUrls = await uploadImagesToCloudinary(selectedFiles);
-                await addDoc(collection(db, "vehicles"), {
-                    title: document.getElementById('title').value,
-                    year: Number(document.getElementById('year').value),
-                    km: Number(document.getElementById('km').value),
-                    price: Number(document.getElementById('price').value),
-                    fuel: document.getElementById('fuel').value,
-                    description: document.getElementById('description').value,
-                    images: imageUrls,
-                    coverIndex: selectedCoverIndex,
-                    createdAt: new Date()
-                });
-
-                vehicleForm.reset();
-                selectedFiles = [];
-                previewContainer.innerHTML = '';
-                adminModal.classList.add('hidden');
-                alert('¡Vehículo publicado correctamente!');
-            } catch (err) {
-                console.error("Error al publicar:", err);
-                alert("Ocurrió un error al guardar el vehículo.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Publicar Vehículo';
-            }
-        });
-
-        // EDICIÓN DE VEHÍCULOS
-        const editModal = document.getElementById('edit-modal');
-        const editForm = document.getElementById('edit-vehicle-form');
-        const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
-
-        closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
-
-        window.openEditModal = function(id) {
-            const v = allVehicles.find(item => item.id === id);
-            if (!v) return;
-
-            document.getElementById('edit-id').value = v.id;
-            document.getElementById('edit-title').value = v.title;
-            document.getElementById('edit-year').value = v.year;
-            document.getElementById('edit-km').value = v.km;
-            document.getElementById('edit-price').value = v.price;
-            document.getElementById('edit-fuel').value = v.fuel;
-            document.getElementById('edit-description').value = v.description;
-
-            editExistingUrls = v.images || [];
-            editFiles = [];
-            editCoverIndex = v.coverIndex || 0;
-
-            renderEditPreviews();
-            editModal.classList.remove('hidden');
-        };
-
-        function renderEditPreviews() {
-            const container = document.getElementById('edit-preview-container');
-            const allItems = [...editExistingUrls, ...editFiles];
-
-            container.innerHTML = allItems.map((item, idx) => {
-                const src = typeof item === 'string' ? item : URL.createObjectURL(item);
-                return `
-                    <div class="relative border border-zinc-800 rounded-lg overflow-hidden h-20 bg-black">
-                        <img src="${src}" class="w-full h-full object-cover">
-                        <button type="button" onclick="setEditCover(${idx})" class="absolute top-1 left-1 text-xs ${editCoverIndex === idx ? 'text-yellow-400' : 'text-gray-400'} bg-black/60 p-1 rounded">
-                            <i class="fa-solid fa-star"></i>
-                        </button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        window.setEditCover = function(idx) {
-            editCoverIndex = idx;
-            renderEditPreviews();
-        };
-
-        document.getElementById('edit-image-files').addEventListener('change', (e) => {
-            editFiles = Array.from(e.target.files);
-            renderEditPreviews();
-        });
-
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const submitBtn = document.getElementById('edit-submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Actualizando...';
-
-            try {
-                const newUploaded = await uploadImagesToCloudinary(editFiles);
-                const finalImages = [...editExistingUrls, ...newUploaded];
-
-                await updateDoc(doc(db, "vehicles", id), {
-                    title: document.getElementById('edit-title').value,
-                    year: Number(document.getElementById('edit-year').value),
-                    km: Number(document.getElementById('edit-km').value),
-                    price: Number(document.getElementById('edit-price').value),
-                    fuel: document.getElementById('edit-fuel').value,
-                    description: document.getElementById('edit-description').value,
-                    images: finalImages,
-                    coverIndex: editCoverIndex
-                });
-
-                editModal.classList.add('hidden');
-                alert('Vehículo actualizado.');
-            } catch (err) {
-                console.error("Error al actualizar:", err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Guardar Cambios';
-            }
-        });
-
-        // ELIMINACIÓN DE VEHÍCULOS
-        window.deleteVehicle = async function(id) {
-            if (confirm('¿Estás seguro de que querés eliminar esta publicación?')) {
-                try {
-                    await deleteDoc(doc(db, "vehicles", id));
-                } catch (err) {
-                    console.error("Error al eliminar:", err);
-                }
-            }
-        };
-
-        // EVENTOS DE OTROS MODALES
-        const setupModalToggle = (btnId, modalId, closeId) => {
-            const btn = document.getElementById(btnId);
-            const modal = document.getElementById(modalId);
-            const closeBtn = document.getElementById(closeId);
-
-            if (btn && modal) btn.addEventListener('click', () => modal.classList.remove('hidden'));
-            if (closeBtn && modal) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-        };
-
-        setupModalToggle('open-about-btn', 'about-modal', 'close-about-modal-btn');
-        setupModalToggle('open-finance-btn', 'finance-modal', 'close-finance-modal-btn');
-        setupModalToggle('open-custom-search-btn', 'custom-search-modal', 'close-custom-search-modal-btn');
-
-        // FORMULARIO BÚSQUEDA PERSONALIZADA
-        document.getElementById('custom-search-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('custom-name').value;
-            const car = document.getElementById('custom-car').value;
-            const budget = document.getElementById('custom-budget').value;
-
-            const text = `Hola MM Automóviles, mi nombre es ${name}. Estoy buscando: ${car} con un presupuesto aprox. de USD ${budget}.`;
-            window.open(`https://wa.me/59899321154?text=${encodeURIComponent(text)}`, '_blank');
-        });
-    </script>
+  `).join("");
+}
+
+window.editVehicle = function(id) {
+  const v = vehicles.find(x => x.id === id);
+  if (!v) return;
+
+  editingId = id;
+  existingEditImages = [...v.images];
+
+  $("edit-id").value = id;
+  $("title").value = v.title;
+  $("year").value = v.year || "";
+  $("km").value = v.km || "";
+  $("price").value = v.price || "";
+  $("fuel").value = v.fuel || "Nafta";
+  $("description").value = v.description || "";
+
+  $("submit-btn").textContent = "Guardar cambios";
+  $("cancel-edit").classList.remove("hidden");
+
+  $("preview-container").innerHTML = existingEditImages.length
+    ? existingEditImages.map((img, i) => `
+      <div class="relative aspect-square rounded-lg overflow-hidden border border-zinc-700">
+        <img src="${escapeHTML(img)}" class="w-full h-full object-cover">
+        <span class="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded">
+          Foto ${i + 1}
+        </span>
+      </div>
+    `).join("")
+    : `<p class="text-xs text-gray-500 col-span-full">Este vehículo no tiene fotos guardadas.</p>`;
+};
+
+window.removeVehicle = async function(id) {
+  const v = vehicles.find(x => x.id === id);
+  if (!v) return;
+
+  if (!confirm(`¿Eliminar "${v.title}"?`)) return;
+
+  try {
+    await deleteDoc(doc(db, activeCollection, id));
+    alert("Vehículo eliminado.");
+  } catch (error) {
+    console.error(error);
+    alert("No se pudo eliminar:\n\n" + error.message);
+  }
+};
+
+/* ============================================================
+   FILTROS / MODALES / WHATSAPP
+   ============================================================ */
+$("toggle-filters").onclick = () => {
+  $("filters").classList.toggle("hidden");
+  $("filter-chevron").classList.toggle("rotate-180");
+};
+
+["filter-fuel", "filter-brand", "filter-sort"].forEach(id => {
+  $(id).addEventListener("change", renderVehicles);
+});
+
+$("reset-filters").onclick = resetFilters;
+
+window.resetFilters = function() {
+  $("filter-fuel").value = "all";
+  $("filter-brand").value = "all";
+  $("filter-sort").value = "default";
+  renderVehicles();
+};
+
+$("about-btn").onclick = () => openModal("about-modal");
+$("finance-btn").onclick = () => openModal("finance-modal");
+$("custom-search-btn").onclick = () => openModal("custom-search-modal");
+
+function openModal(id) {
+  $(id).classList.add("open");
+}
+
+function closeModal(id) {
+  $(id).classList.remove("open");
+}
+
+document.querySelectorAll(".close-modal").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.closest(".modal").classList.remove("open");
+  });
+});
+
+$("gallery-close").onclick = () => closeModal("gallery-modal");
+
+document.querySelectorAll(".modal").forEach(modal => {
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.remove("open");
+  });
+});
+
+$("custom-search-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const name = $("custom-name").value.trim();
+  const car = $("custom-car").value.trim();
+  const budget = $("custom-budget").value.trim();
+
+  const message =
+    `Hola MM Automóviles, soy ${name}. Estoy buscando ${car}. ` +
+    `Mi presupuesto aproximado es de USD ${budget}.`;
+
+  window.open(
+    `https://wa.me/59899321154?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+});
+
+/* ESC para cerrar */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
+  }
+});
+
+/* ============================================================
+   INICIAR
+   ============================================================ */
+connectFirebase();
+
+</script>
 </body>
 </html>
