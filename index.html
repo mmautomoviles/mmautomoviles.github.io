@@ -32,14 +32,14 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20 gap-4">
         
-        <!-- LOGO -->
+        <!-- LOGO ORIGINAL MM AUTOMÓVILES -->
         <a href="#" class="flex items-center gap-3">
-          <div class="bg-gradient-to-tr from-red-600 to-red-500 text-white font-black text-2xl w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg shadow-red-950/50">
-            MM
+          <div class="flex items-center justify-center font-black text-2xl tracking-tighter text-white font-brand">
+            <span class="text-red-600">M</span><span>M</span>
           </div>
-          <div>
-            <span class="text-xl font-extrabold tracking-tight text-white block leading-none font-brand">AUTOMÓVILES</span>
-            <span class="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">Catálogo Exclusivo</span>
+          <div class="border-l border-zinc-800 pl-3">
+            <span class="text-xs font-black tracking-widest text-white block uppercase">AUTOMÓVILES</span>
+            <span class="text-[9px] text-zinc-400 font-semibold block leading-tight">Encontrá tu próximo auto con la mejor atención y confianza.</span>
           </div>
         </a>
 
@@ -97,7 +97,7 @@
       </button>
     </div>
 
-    <!-- PANEL DE FILTROS (OCULTO POR DEFECTO) -->
+    <!-- PANEL DE FILTROS -->
     <div id="filters" class="hidden bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 mb-8 backdrop-blur-sm">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         
@@ -151,7 +151,7 @@
       </div>
     </div>
 
-    <!-- SECCIÓN CATÁLOGOS -->
+    <!-- SECCIÓN CATÁLOGO -->
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-black text-white font-brand flex items-center gap-2">
         Catálogo de Unidades
@@ -191,7 +191,6 @@
       </button>
 
       <div class="overflow-y-auto flex-grow">
-        <!-- VISOR IMAGEN PRINCIPAL -->
         <div class="relative aspect-video bg-black flex items-center justify-center">
           <img id="gallery-main" class="w-full h-full object-contain" src="" alt="Vehículo">
           <button id="gallery-prev" class="absolute left-3 bg-black/60 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition border border-zinc-700">
@@ -202,10 +201,8 @@
           </button>
         </div>
 
-        <!-- THUMBNAILS -->
         <div id="gallery-thumbs" class="flex gap-2 p-3 overflow-x-auto bg-zinc-900/50 border-y border-zinc-800"></div>
 
-        <!-- INFO DETALLADA -->
         <div class="p-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -382,7 +379,7 @@
               <input type="file" id="image-files" multiple accept="image/*" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700">
             </div>
 
-            <!-- PREVISUALIZACIÓN Y SELECCIÓN DE PORTADA CON ESTRELLA -->
+            <!-- PREVISUALIZACIÓN DE FOTOS -->
             <div id="preview-container" class="grid grid-cols-3 gap-2 mt-2"></div>
 
             <div class="flex gap-2 pt-2">
@@ -446,10 +443,6 @@
     let isAdminLoggedIn = false;
 
     const $ = (id) => document.getElementById(id);
-
-    // Quitar inventario duplicado del modal admin si existe
-    const adminListContainer = $("admin-list")?.closest(".border-t");
-    if (adminListContainer) adminListContainer.remove();
 
     // =====================================================
     // SUSCRIPCIÓN EN TIEMPO REAL FIRESTORE
@@ -769,7 +762,7 @@
       chevron.classList.toggle('rotate-180');
     });
 
-    // Login de administración (Contraseña MM2026)
+    // Login de administración (Contraseña: MM2026)
     $('login-form')?.addEventListener('submit', (e) => {
       e.preventDefault();
       const pass = $('admin-pass').value;
@@ -800,7 +793,7 @@
       renderVehicles();
     });
 
-    // PREVISUALIZACIÓN DE FOTOS CON SELECCIÓN DE PORTADA
+    // PREVISUALIZACIÓN DE FOTOS CON PORTADA
     $('image-files')?.addEventListener('change', async (e) => {
       const files = Array.from(e.target.files);
       selectedFilesBase64 = [];
@@ -874,7 +867,7 @@
       });
     }
 
-    // PUBLICAR O EDITAR EN FIRESTORE
+    // PUBLICAR O EDITAR VEHÍCULO
     $('vehicle-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = $('submit-btn');
@@ -929,7 +922,7 @@
       } catch (err) {
         console.error('Error guardando en Firestore:', err);
         status.textContent = 'Error al guardar datos: ' + err.message;
-      } font-bold {
+      } finally {
         btn.disabled = false;
         btn.textContent = editId ? 'Guardar Cambios' : 'Publicar Vehículo';
       }
