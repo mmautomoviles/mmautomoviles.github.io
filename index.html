@@ -943,7 +943,7 @@
       renderPreviewContainer();
     };
 
-    function convertFileToBase64(file) {
+   function convertFileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -955,8 +955,8 @@
                 let width = img.width;
                 let height = img.height;
                 
-                // Si la imagen es muy grande, la achicamos a un máximo de 800px de ancho
-                const maxWidth = 800;
+                // Reducimos el ancho máximo a 600px para asegurar que entre holgado
+                const maxWidth = 600;
                 if (width > maxWidth) {
                     height = Math.round((height * maxWidth) / width);
                     width = maxWidth;
@@ -967,8 +967,8 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Comprimimos la calidad al 70% para que pase sin problemas por Firestore
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
+                // Calidad al 60% para que el archivo pese muy poco
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
             };
             img.onerror = error => reject(error);
         };
