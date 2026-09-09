@@ -1109,5 +1109,57 @@
     });
 
   </script>
+  <!-- BOTONES DE PAGINACIÓN -->
+<div style="display: flex; justify-content: center; gap: 15px; margin: 40px 0;">
+    <button id="btn-anterior" onclick="cambiarPagina(-1)" style="padding: 10px 20px; background-color: #27272a; color: white; border: none; border-radius: 8px; cursor: pointer; display: none;">⬅️ Anterior</button>
+    <span id="info-pagina" style="color: white; display: flex; align-items: center; font-weight: bold;">Página 1</span>
+    <button id="btn-siguiente" onclick="cambiarPagina(1)" style="padding: 10px 20px; background-color: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer;">Siguiente ➡️</button>
+</div>
+  <!-- PEGA TU CÓDIGO NUEVO AQUÍ AL FINAL DE TODO -->
+    <script>
+        let paginaActual = 1;
+        const autosPorPagina = 10;
+        let listaDeAutosGlobal = [];
+
+        function mostrarAutosPaginados() {
+            const contenedor = document.getElementById('vehicles-container') || document.querySelector('.lista-autos');
+            if (!contenedor) return;
+            
+            contenedor.innerHTML = '';
+
+            const inicio = (paginaActual - 1) * autosPorPagina;
+            const fin = inicio + autosPorPagina;
+            const autosPagina = listaDeAutosGlobal.slice(inicio, fin);
+
+            autosPagina.forEach(auto => {
+                contenedor.innerHTML += `
+                    <div class="vehicle-card" style="background-color: #27272a; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; margin-bottom: 20px;">
+                        <img src="${auto.array && auto.array[0] ? auto.array[0] : ''}" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                            <h3 style="color: white; font-size: 18px; margin: 0;">${auto.titulo}</h3>
+                            <div style="color: #ef4444; font-size: 20px; font-weight: bold;">USD ${auto.precio}</div>
+                            <div style="color: #a1a1aa; font-size: 14px; display: flex; gap: 12px;">
+                                <span>📅 ${auto.anio}</span>
+                                <span>🛣️ ${auto.km} km</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('info-pagina').textContent = `Página ${paginaActual}`;
+            document.getElementById('btn-anterior').style.display = paginaActual === 1 ? 'none' : 'block';
+            document.getElementById('btn-siguiente').style.display = fin >= listaDeAutosGlobal.length ? 'none' : 'block';
+        }
+
+        function cambiarPagina(direccion) {
+            paginaActual += direccion;
+            mostrarAutosPaginados();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+
+</body>
+</html>
 </body>
 </html>
